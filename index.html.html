@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Morse Audio Decoder / Trainer</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --border-color: #30363d;
+            --accent-color: #58a6ff;
+            --accent-glow: rgba(88, 166, 255, 0.25);
+            --text-primary: #c9d1d9;
+            --text-secondary: #8b949e;
+            --dot-color: #3fb950;
+            --dash-color: #f85149;
+            --heart-dark-red: #e63946;
+            --heart-glow: rgba(230, 57, 70, 0.4);
+            --btn-bg: #21262d;
+            --btn-active: #262c36;
+            --timer-color: #ffffff;
+        }
+        [data-theme="light"] {
+            --bg-color: #f6f8fa;
+            --card-bg: #ffffff;
+            --border-color: #d0d7de;
+            --accent-color: #0969da;
+            --accent-glow: rgba(9, 105, 218, 0.15);
+            --text-primary: #1f2328;
+            --text-secondary: #656d76;
+            --dot-color: #1a7f37;
+            --dash-color: #cf222e;
+            --heart-dark-red: #d90429;
+            --heart-glow: rgba(217, 4, 41, 0.2);
+            --btn-bg: #f3f4f6;
+            --btn-active: #e5e7eb;
+            --timer-color: #1f2328;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        html, body {
+            height: 100vh;
+            max-height: 100vh;
+            overflow: hidden;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem 1rem;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            position: relative;
+        }
+        /* HORNÍ LIŠTA PRO NÁSTROJE */
+        .top-bar-left {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            z-index: 100;
+        }
+        .lang-flag {
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            color: var(--text-secondary);
+            padding: 2px 6px;
+            border-radius: 6px;
+            border: 1px solid transparent;
+            transition: all 0.15s ease;
+            user-select: none;
+        }
+        .lang-flag:hover, .lang-flag.active {
+            color: var(--accent-color);
+            border-color: var(--border-color);
+            background: var(--card-bg);
+            transform: scale(1.1);
+        }
+        .top-bar-right {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            z-index: 100;
+        }
+        .theme-toggle-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            padding: 6px 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .theme-toggle-btn:hover {
+            transform: scale(1.1);
+            border-color: var(--accent-color);
+        }
+        header {
+            text-align: center;
+            margin-bottom: 1rem;
+            margin-top: 0.5rem;
+        }
+        header h1 {
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            font-weight: 700;
+        }
+        .wrapper {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        .main-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 3rem 2rem;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            position: relative;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        .char-display-wrapper {
+            width: 100%;
+            height: 140px;
+            perspective: 1000px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .flip-card-inner.flipped {
+            transform: rotateX(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 7rem;
+            font-weight: 800;
+            user-select: none;
+        }
+        .flip-card-front {
+            color: var(--accent-color);
+            text-shadow: 0 0 30px var(--accent-glow);
+        }
+        .flip-card-back {
+            color: var(--heart-dark-red);
+            text-shadow: 0 0 25px var(--heart-glow);
+            transform: rotateX(180deg);
+        }
+        .char-display-wrapper.active {
+            transform: scale(1.08);
+            transition: transform 0.1s ease;
+        }
+        .char-display-wrapper.unknown .flip-card-front {
+            color: var(--dash-color);
+        }
+        .morse-code-display {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2.2rem;
+            letter-spacing: 6px;
+            height: 48px;
+            margin: 1.5rem 0;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 200px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+        .morse-symbol {
+            display: inline-block;
+            transition: transform 0.1s;
+        }
+        .morse-symbol.dot { color: var(--dot-color); }
+        .morse-symbol.dash { color: var(--dash-color); }
+        .key-hints {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            width: 100%;
+            margin-top: 1rem;
+        }
+        .key-btn {
+            background-color: var(--btn-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.15s ease;
+        }
+        .key-btn.active {
+            border-color: var(--accent-color);
+            background-color: var(--btn-active);
+            transform: translateY(2px);
+        }
+        .key-btn .key-name {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        .key-btn .key-action {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        .key-btn.dot-btn .key-action { color: var(--dot-color); }
+        .key-btn.dash-btn .key-action { color: var(--dash-color); }
+        .timer-display {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 3.8rem;
+            font-weight: 800;
+            height: 105px;
+            line-height: 105px;
+            color: var(--timer-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            width: 100%;
+            text-align: center;
+            transition: color 0.3s ease;
+        }
+        .history-container {
+            width: 100%;
+            margin-top: 1.5rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1rem 1.5rem;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .history-title {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .play-audio-btn {
+            background: var(--btn-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+        .play-audio-btn:hover {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+            transform: scale(1.03);
+        }
+        .play-audio-btn.playing {
+            border-color: var(--dash-color);
+            color: var(--dash-color);
+        }
+        .history-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.2rem;
+            word-wrap: break-word;
+            min-height: 1.5rem;
+            max-height: 4.8rem;
+            overflow-y: auto;
+            color: var(--text-primary);
+            white-space: pre-wrap;
+            padding-right: 4px;
+        }
+        .history-text::-webkit-scrollbar { width: 6px; }
+        .history-text::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.1); border-radius: 4px; }
+        .history-text::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+        
+        .active-playing-char {
+            text-decoration: underline;
+            text-decoration-color: var(--accent-color);
+            text-decoration-thickness: 3px;
+            text-underline-offset: 4px;
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        .left-sidebar {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+        .cheat-sheet-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1rem 0.8rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        @media (min-width: 1100px) {
+            .left-sidebar {
+                position: absolute;
+                top: 0;
+                right: calc(100% + 1.5rem);
+                width: 220px;
+                margin-top: 0;
+            }
+            .cheat-sheet-card.right-panel {
+                position: absolute;
+                top: 0;
+                margin-top: 0;
+                left: calc(100% + 1.5rem);
+                width: 180px;
+            }
+        }
+        .cheat-sheet-title {
+            font-size: 0.7rem;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            margin-bottom: 0.6rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.4rem;
+        }
+        .cheat-sheet-subtitle { margin-top: 0.8rem; }
+        .cheat-letters-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2px 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.68rem;
+        }
+        .cheat-numbers-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.68rem;
+        }
+        .cheat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2px 4px;
+            background: rgba(150, 150, 150, 0.05);
+            border-radius: 4px;
+        }
+        .cheat-char {
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+        .cheat-code {
+            color: var(--text-primary);
+            letter-spacing: 0.5px;
+        }
+        footer {
+            margin-top: 2rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+    </style>
+</head>
+<body data-theme="dark">
+    <!-- LEVÝ HORNÍ ROH: ZKRATKY JAZYKŮ -->
+    <div class="top-bar-left">
+        <span class="lang-flag active" onclick="setLanguage('cs', event)" title="Čeština">CZ</span>
+        <span class="lang-flag" onclick="setLanguage('en', event)" title="English">EN</span>
+    </div>
+    <!-- PRAVÝ HORNÍ ROH: PŘEPÍNAČ TMADÉHO / SVĚTLÉHO MÓDU -->
+    <div class="top-bar-right">
+        <button class="theme-toggle-btn" id="themeBtn" onclick="toggleTheme()" title="Přepnout režim">🌙</button>
+    </div>
+    <header>
+        <h1 id="appTitle">DEKÓDÉR MORSEOVY ABECEDY</h1>
+    </header>
+    <div class="wrapper">
+        <div class="left-sidebar">
+            <aside class="cheat-sheet-card left-panel">
+                <div class="cheat-sheet-title" id="titleAlphabet">ABECEDA (A–Z)</div>
+                <div class="cheat-letters-grid" id="cheatLettersGrid">
+                    <!-- Dynamicky generováno podle zvoleného jazyka -->
+                </div>
+            </aside>
+            <div class="timer-display" id="timerDisplay">0.0</div>
+        </div>
+        <main class="main-card">
+            <div class="char-display-wrapper" id="charDisplayWrapper">
+                <div class="flip-card-inner" id="flipCardInner">
+                    <div class="flip-card-front" id="charDisplayFront">❤️</div>
+                    <div class="flip-card-back" id="charDisplayBack">73</div>
+                </div>
+            </div>
+            <div class="morse-code-display" id="morseDisplay"></div>
+            <div class="key-hints">
+                <div class="key-btn dot-btn" id="dotKeyIndicator">
+                    <span class="key-name" id="labelDotKey">← NumPad ( , / Entf )</span>
+                    <span class="key-action" id="labelDotAction">Tečka ( • )</span>
+                </div>
+                <div class="key-btn dash-btn" id="dashKeyIndicator">
+                    <span class="key-name" id="labelDashKey">NumPad (Enter) →</span>
+                    <span class="key-action" id="labelDashAction">Čárka ( − )</span>
+                </div>
+            </div>
+        </main>
+        <section class="history-container">
+            <div class="history-header">
+                <div class="history-title" id="historyTitle">Dekódovaný text (Mezerník = Smazat vše)</div>
+                <button class="play-audio-btn" id="playAudioBtn" onclick="togglePlayTextAudio()">
+                    <span id="playIcon">🔊</span>
+                    <span id="playLabel">Přehrát</span>
+                </button>
+            </div>
+            <div class="history-text" id="historyText" tabindex="0"></div>
+        </section>
+        <aside class="cheat-sheet-card right-panel">
+            <div class="cheat-sheet-title" id="titleDigits">ČÍSLICE (0–9)</div>
+            <div class="cheat-numbers-grid">
+                <div class="cheat-row"><span class="cheat-char">0</span><span class="cheat-code">−−−−−</span></div>
+                <div class="cheat-row"><span class="cheat-char">1</span><span class="cheat-code">•−−−−</span></div>
+                <div class="cheat-row"><span class="cheat-char">2</span><span class="cheat-code">••−−−</span></div>
+                <div class="cheat-row"><span class="cheat-char">3</span><span class="cheat-code">•••−−</span></div>
+                <div class="cheat-row"><span class="cheat-char">4</span><span class="cheat-code">••••−</span></div>
+                <div class="cheat-row"><span class="cheat-char">5</span><span class="cheat-code">•••••</span></div>
+                <div class="cheat-row"><span class="cheat-char">6</span><span class="cheat-code">−••••</span></div>
+                <div class="cheat-row"><span class="cheat-char">7</span><span class="cheat-code">−−•••</span></div>
+                <div class="cheat-row"><span class="cheat-char">8</span><span class="cheat-code">−−−••</span></div>
+                <div class="cheat-row"><span class="cheat-char">9</span><span class="cheat-code">−−−−•</span></div>
+            </div>
+            <div class="cheat-sheet-title cheat-sheet-subtitle" id="titleSymbols">ZNAKY</div>
+            <div class="cheat-numbers-grid">
+                <div class="cheat-row"><span class="cheat-char">.</span><span class="cheat-code">•−•−•−</span></div>
+                <div class="cheat-row"><span class="cheat-char">,</span><span class="cheat-code">−−••−−</span></div>
+                <div class="cheat-row"><span class="cheat-char">?</span><span class="cheat-code">••−−••</span></div>
+                <div class="cheat-row"><span class="cheat-char">!</span><span class="cheat-code">−−••−</span></div>
+                <div class="cheat-row"><span class="cheat-char">;</span><span class="cheat-code">−•−•−•</span></div>
+                <div class="cheat-row"><span class="cheat-char">:</span><span class="cheat-code">−−−•••</span></div>
+                <div class="cheat-row"><span class="cheat-char">(</span><span class="cheat-code">-•--•</span></div>
+                <div class="cheat-row"><span class="cheat-char">)</span><span class="cheat-code">−•−−•−</span></div>
+                <div class="cheat-row"><span class="cheat-char">"</span><span class="cheat-code">•−••−•</span></div>
+                <div class="cheat-row"><span class="cheat-char">-</span><span class="cheat-code">−••••−</span></div>
+                <div class="cheat-row"><span class="cheat-char">_</span><span class="cheat-code">••−−•−</span></div>
+                <div class="cheat-row"><span class="cheat-char">@</span><span class="cheat-code">•−−•−•</span></div>
+            </div>
+        </aside>
+    </div>
+    <footer>
+        <p id="footerText">Aplikace pro výuku a dekódování Morseovy abecedy. Aplikace od Zdeněk Sába_2026.</p>
+    </footer>
+    <script>
+        let currentLang = 'cs';
+        let isPlayingAudio = false;
+        let audioPlaybackTimeouts = [];
+        let rawHistoryText = "";
+
+        const TRANSLATIONS = {
+            cs: {
+                title: "DEKÓDÉR MORSEOVY ABECEDY",
+                alphabet: "ABECEDA (A–Z)",
+                hasCH: true,
+                digits: "ČÍSLICE (0–9)",
+                symbols: "ZNAKY",
+                dotKey: "← NumPad ( , / Entf )",
+                dotAction: "Tečka ( • )",
+                dashKey: "NumPad (Enter) →",
+                dashAction: "Čárka ( − )",
+                historyTitle: "Dekódovaný text (Mezerník = Smazat vše)",
+                footer: "Aplikace pro výuku a dekódování Morseovy abecedy. Aplikace od Zdeněk Sába_2026.",
+                playText: "Přehrát",
+                stopText: "Zastavit"
+            },
+            en: {
+                title: "MORSE CODE DECODER",
+                alphabet: "ALPHABET (A–Z)",
+                hasCH: false,
+                digits: "DIGITS (0–9)",
+                symbols: "SYMBOLS",
+                dotKey: "← / NumPad ( . / Del )",
+                dotAction: "Dot ( • )",
+                dashKey: "NumPad (Enter) →",
+                dashAction: "Dash ( − )",
+                historyTitle: "Decoded Text (Spacebar = Clear All)",
+                footer: "Application for learning and decoding Morse code. App by Zdeněk Sába_2026.",
+                playText: "Play",
+                stopText: "Stop"
+            }
+        };
+
+        const ALPHABET_CS = [
+            { char: "A", code: "•−" }, { char: "N", code: "−•" },
+            { char: "B", code: "−•••" }, { char: "O", code: "−−−" },
+            { char: "C", code: "−•−•" }, { char: "P", code: "•−−•" },
+            { char: "D", code: "−••" }, { char: "Q", code: "−−•−" },
+            { char: "E", code: "•" }, { char: "R", code: "•−•" },
+            { char: "F", code: "••−•" }, { char: "S", code: "•••" },
+            { char: "G", code: "−−•" }, { char: "T", code: "−" },
+            { char: "H", code: "••••" }, { char: "U", code: "••−" },
+            { char: "CH", code: "−−−−" }, { char: "V", code: "•••−" },
+            { char: "I", code: "••" }, { char: "W", code: "•−−" },
+            { char: "J", code: "•−−−" }, { char: "X", code: "−••−" },
+            { char: "K", code: "−•−" }, { char: "Y", code: "−•−−" },
+            { char: "L", code: "•−••" }, { char: "Z", code: "−−••" },
+            { char: "M", code: "−−" }
+        ];
+
+        const ALPHABET_INT = [
+            { char: "A", code: "•−" }, { char: "N", code: "−•" },
+            { char: "B", code: "−•••" }, { char: "O", code: "−−−" },
+            { char: "C", code: "−•−•" }, { char: "P", code: "•−−•" },
+            { char: "D", code: "−••" }, { char: "Q", code: "−−•−" },
+            { char: "E", code: "•" }, { char: "R", code: "•−•" },
+            { char: "F", code: "••−•" }, { char: "S", code: "•••" },
+            { char: "G", code: "−−•" }, { char: "T", code: "−" },
+            { char: "H", code: "••••" }, { char: "U", code: "••−" },
+            { char: "I", code: "••" }, { char: "V", code: "•••−" },
+            { char: "J", code: "•−−−" }, { char: "W", code: "•−−" },
+            { char: "K", code: "−•−" }, { char: "Y", code: "−•−−" },
+            { char: "L", code: "•−••" }, { char: "Z", code: "−−••" },
+            { char: "M", code: "−−" }
+        ];
+
+        const TEXT_TO_MORSE = {
+            "A": ".-", "B": "-...", "C": "-.-.", "D": "-..", "E": ".",
+            "F": "..-.", "G": "--.", "H": "....", "I": "..", "J": ".---",
+            "K": "-.-", "L": ".-..", "M": "--", "N": "-.", "O": "---",
+            "P": ".--.", "Q": "--.-", "R": ".-.", "S": "...", "T": "-",
+            "U": "..-", "V": "...-", "W": ".--", "X": "-..-", "Y": "-.--",
+            "Z": "--..", "0": "-----", "1": ".----", "2": "..---", "3": "...--",
+            "4": "....-", "5": ".....", "6": "-....", "7": "--...", "8": "---..",
+            "9": "----.", ".": ".-.-.-", ",": "--..--", "?": "..--..", "!": "--..-",
+            ";": "-.-.-.", ":": "---...", "(": "-.--.", ")": "-.--.-",
+            '"': ".-..-.", "-": "-....-", "_": "..--.-", "@": ".--.-."
+        };
+
+        function renderAlphabet(isCS) {
+            const grid = document.getElementById('cheatLettersGrid');
+            grid.innerHTML = '';
+            const list = isCS ? ALPHABET_CS : ALPHABET_INT;
+            
+            list.forEach(item => {
+                const row = document.createElement('div');
+                row.className = 'cheat-row';
+                row.innerHTML = `<span class="cheat-char">${item.char}</span><span class="cheat-code">${item.code}</span>`;
+                grid.appendChild(row);
+            });
+            if (isCS) {
+                const emptyRow = document.createElement('div');
+                emptyRow.className = 'cheat-row';
+                grid.appendChild(emptyRow);
+            }
+        }
+
+        function setLanguage(lang, e) {
+            currentLang = lang;
+            const t = TRANSLATIONS[lang] || TRANSLATIONS.cs;
+            document.getElementById('appTitle').textContent = t.title;
+            document.getElementById('titleAlphabet').textContent = t.alphabet;
+            document.getElementById('titleDigits').textContent = t.digits;
+            document.getElementById('titleSymbols').textContent = t.symbols;
+            document.getElementById('labelDotKey').textContent = t.dotKey;
+            document.getElementById('labelDotAction').textContent = t.dotAction;
+            document.getElementById('labelDashKey').textContent = t.dashKey;
+            document.getElementById('labelDashAction').textContent = t.dashAction;
+            document.getElementById('historyTitle').textContent = t.historyTitle;
+            document.getElementById('footerText').textContent = t.footer;
+            
+            const playLabel = document.getElementById('playLabel');
+            if (isPlayingAudio) {
+                playLabel.textContent = t.stopText;
+            } else {
+                playLabel.textContent = t.playText;
+            }
+
+            renderAlphabet(t.hasCH);
+            document.querySelectorAll('.lang-flag').forEach(el => el.classList.remove('active'));
+            if (e && e.target) {
+                e.target.classList.add('active');
+            }
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            const btn = document.getElementById('themeBtn');
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.setAttribute('data-theme', 'light');
+                btn.textContent = '☀️';
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                btn.textContent = '🌙';
+            }
+        }
+
+        const MORSE_MAP = {
+            ".-": "A", "-...": "B", "-.-.": "C", "-..": "D", ".": "E",
+            "..-.": "F", "--.": "G", "....": "H", "..": "I", ".---": "J",
+            "-.-": "K", ".-..": "L", "--": "M", "-.": "N", "---": "O",
+            ".--.": "P", "--.-": "Q", ".-.": "R", "...": "S", "-": "T",
+            "..-": "U", "...-": "V", ".--": "W", "-..-": "X", "-.--": "Y",
+            "--..": "Z", "----": "CH",
+            "-----": "0", ".----": "1", "..---": "2", "...--": "3", "....-": "4",
+            ".....": "5", "-....": "6", "--...": "7", "---..": "8", "----.": "9",
+            ".-.-.-": ".", "--..--": ",", "..--..": "?", "--..-": "!",
+            "-.-.-.": ";", "---...": ":", "-.--.": "(", "-.--.-": ")",
+            ".-..-.": '"', "-....-": "-", "..--.-": "_", ".--.-.": "@"
+        };
+
+        const LETTER_TIMEOUT_MS = 420;
+        const WORD_TIMEOUT_MS = 1500;
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playTone(durationMs, frequency = 700) {
+            initAudio();
+            if (!audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(frequency, audioCtx.currentTime);
+            const attackTime = 0.005;
+            const releaseTime = 0.005;
+            const durationSec = durationMs / 1000;
+            gain.gain.setValueAtTime(0, audioCtx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + attackTime);
+            gain.gain.setValueAtTime(0.2, audioCtx.currentTime + durationSec - releaseTime);
+            gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + durationSec);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + durationSec);
+        }
+
+        function highlightCharacter(startIndex, length) {
+            const textEl = document.getElementById('historyText');
+            if (!rawHistoryText) return;
+
+            if (startIndex === null || startIndex === undefined) {
+                textEl.textContent = rawHistoryText;
+                return;
+            }
+
+            const before = rawHistoryText.substring(0, startIndex);
+            const target = rawHistoryText.substring(startIndex, startIndex + length);
+            const after = rawHistoryText.substring(startIndex + length);
+
+            textEl.innerHTML = '';
+            textEl.appendChild(document.createTextNode(before));
+            
+            const span = document.createElement('span');
+            span.className = 'active-playing-char';
+            span.textContent = target;
+            textEl.appendChild(span);
+
+            textEl.appendChild(document.createTextNode(after));
+        }
+
+        function stopAudioPlayback() {
+            audioPlaybackTimeouts.forEach(t => clearTimeout(t));
+            audioPlaybackTimeouts = [];
+            isPlayingAudio = false;
+            
+            highlightCharacter(null);
+
+            const btn = document.getElementById('playAudioBtn');
+            const icon = document.getElementById('playIcon');
+            const label = document.getElementById('playLabel');
+            const t = TRANSLATIONS[currentLang] || TRANSLATIONS.cs;
+
+            btn.classList.remove('playing');
+            icon.textContent = '🔊';
+            label.textContent = t.playText;
+        }
+
+        function togglePlayTextAudio() {
+            if (isPlayingAudio) {
+                stopAudioPlayback();
+                return;
+            }
+
+            const historyEl = document.getElementById('historyText');
+            rawHistoryText = historyEl.textContent;
+            const text = rawHistoryText.toUpperCase();
+            if (!text.trim()) return;
+
+            isPlayingAudio = true;
+            const btn = document.getElementById('playAudioBtn');
+            const icon = document.getElementById('playIcon');
+            const label = document.getElementById('playLabel');
+            const t = TRANSLATIONS[currentLang] || TRANSLATIONS.cs;
+
+            btn.classList.add('playing');
+            icon.textContent = '⏹️';
+            label.textContent = t.stopText;
+
+            const unit = 80;
+            let currentTime = 0;
+
+            let i = 0;
+            while (i < text.length) {
+                let code = null;
+                let charLen = 1;
+                let charStartIndex = i;
+
+                if (i < text.length - 1 && text.substring(i, i + 2) === "CH") {
+                    code = "----";
+                    charLen = 2;
+                } else if (text[i] === " ") {
+                    currentTime += unit * 7;
+                    i++;
+                    continue;
+                } else {
+                    code = TEXT_TO_MORSE[text[i]];
+                    charLen = 1;
+                }
+
+                if (code) {
+                    const highlightStartTimer = setTimeout(() => {
+                        highlightCharacter(charStartIndex, charLen);
+                    }, currentTime);
+                    audioPlaybackTimeouts.push(highlightStartTimer);
+
+                    for (let char of code) {
+                        const dur = char === '.' ? unit : unit * 3;
+                        const toneTimer = setTimeout(() => {
+                            playTone(dur, 700);
+                        }, currentTime);
+                        audioPlaybackTimeouts.push(toneTimer);
+                        currentTime += dur + unit;
+                    }
+
+                    const highlightEndTimer = setTimeout(() => {
+                        highlightCharacter(null);
+                    }, currentTime);
+                    audioPlaybackTimeouts.push(highlightEndTimer);
+
+                    currentTime += unit * 2;
+                }
+
+                i += charLen;
+            }
+
+            const finishTimer = setTimeout(() => {
+                stopAudioPlayback();
+            }, currentTime);
+            audioPlaybackTimeouts.push(finishTimer);
+        }
+
+        let currentMorse = "";
+        let autoEvalTimeout = null;
+        let autoSpaceTimeout = null;
+        let timerInterval = null;
+        let timerInactivityTimeout = null;
+        let timerStartTime = null;
+        let lastInputTime = null;          // ← nová proměnná
+        let isTiming = false;
+        let heartFlipInterval = null;
+        let isFlipped = false;
+        let isIdleState = true;
+
+        const charDisplayWrapper = document.getElementById('charDisplayWrapper');
+        const flipCardInner = document.getElementById('flipCardInner');
+        const charDisplayFront = document.getElementById('charDisplayFront');
+        const charDisplayBack = document.getElementById('charDisplayBack');
+        const morseDisplay = document.getElementById('morseDisplay');
+        const historyText = document.getElementById('historyText');
+        const dotIndicator = document.getElementById('dotKeyIndicator');
+        const dashIndicator = document.getElementById('dashKeyIndicator');
+        const timerDisplay = document.getElementById('timerDisplay');
+
+        function formatTime(seconds) {
+            if (seconds < 60) {
+                return seconds.toFixed(1);
+            }
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+
+        function startTimer() {
+            if (!isTiming) {
+                isTiming = true;
+                timerStartTime = Date.now();
+                lastInputTime = Date.now();
+                timerInterval = setInterval(() => {
+                    const elapsed = (Date.now() - timerStartTime) / 1000;
+                    timerDisplay.textContent = formatTime(elapsed);
+                }, 100);
+            } else {
+                // časovač už běží → aktualizujeme čas posledního stisku
+                lastInputTime = Date.now();
+            }
+        }
+
+        function resetInactivityTimer() {
+            if (timerInactivityTimeout) clearTimeout(timerInactivityTimeout);
+            
+            // Po 3 sekundách od posledního znaku odečteme 3 s a zastavíme
+            timerInactivityTimeout = setTimeout(() => {
+                if (isTiming && lastInputTime && timerStartTime) {
+                    const elapsedToLastInput = (lastInputTime - timerStartTime) / 1000;
+                    timerDisplay.textContent = formatTime(elapsedToLastInput);
+                }
+                stopTimer();
+            }, 3000);
+        }
+
+        function stopTimer() {
+            if (isTiming) {
+                clearInterval(timerInterval);
+                isTiming = false;
+            }
+        }
+
+        function resetTimerDisplay() {
+            stopTimer();
+            if (timerInactivityTimeout) clearTimeout(timerInactivityTimeout);
+            lastInputTime = null;
+            timerDisplay.textContent = "0.0";
+        }
+
+        function startHeartAnimation() {
+            if (!heartFlipInterval) {
+                heartFlipInterval = setInterval(() => {
+                    if (isIdleState) {
+                        isFlipped = !isFlipped;
+                        if (isFlipped) {
+                            flipCardInner.classList.add('flipped');
+                        } else {
+                            flipCardInner.classList.remove('flipped');
+                        }
+                    }
+                }, 4000);
+            }
+        }
+
+        function stopHeartAnimation() {
+            if (heartFlipInterval) {
+                clearInterval(heartFlipInterval);
+                heartFlipInterval = null;
+            }
+        }
+
+        function renderMorseDisplay() {
+            morseDisplay.innerHTML = '';
+            for (let char of currentMorse) {
+                const span = document.createElement('span');
+                span.className = 'morse-symbol ' + (char === '.' ? 'dot' : 'dash');
+                span.textContent = char === '.' ? '•' : '−';
+                morseDisplay.appendChild(span);
+            }
+        }
+
+        function handleInput(symbol) {
+            if (isPlayingAudio) stopAudioPlayback();
+            
+            if (isIdleState) {
+                isIdleState = false;
+                stopHeartAnimation();
+            }
+            
+            if (isFlipped) {
+                flipCardInner.classList.remove('flipped');
+                isFlipped = false;
+            }
+
+            if (symbol === '.') {
+                playTone(80, 700);
+                dotIndicator.classList.add('active');
+                setTimeout(() => dotIndicator.classList.remove('active'), 120);
+            } else if (symbol === '-') {
+                playTone(240, 700);
+                dashIndicator.classList.add('active');
+                setTimeout(() => dashIndicator.classList.remove('active'), 120);
+            }
+
+            currentMorse += symbol;
+            renderMorseDisplay();
+
+            charDisplayWrapper.classList.remove('unknown');
+            charDisplayFront.textContent = MORSE_MAP[currentMorse] || '?';
+
+            if (autoEvalTimeout) clearTimeout(autoEvalTimeout);
+            if (autoSpaceTimeout) clearTimeout(autoSpaceTimeout);
+
+            startTimer();
+            resetInactivityTimer();
+
+            autoEvalTimeout = setTimeout(() => {
+                evaluateMorse();
+            }, LETTER_TIMEOUT_MS);
+        }
+
+        function evaluateMorse() {
+            if (!currentMorse) return;
+
+            const decodedChar = MORSE_MAP[currentMorse];
+
+            if (decodedChar) {
+                historyText.textContent += decodedChar;
+                charDisplayFront.textContent = decodedChar;
+                charDisplayWrapper.classList.remove('unknown');
+            } else {
+                charDisplayFront.textContent = '?';
+                charDisplayWrapper.classList.add('unknown');
+            }
+
+            charDisplayWrapper.classList.add('active');
+            setTimeout(() => charDisplayWrapper.classList.remove('active'), 150);
+
+            currentMorse = "";
+            renderMorseDisplay();
+
+            autoSpaceTimeout = setTimeout(() => {
+                if (historyText.textContent.length > 0 && !historyText.textContent.endsWith(' ')) {
+                    historyText.textContent += ' ';
+                }
+            }, WORD_TIMEOUT_MS - LETTER_TIMEOUT_MS);
+        }
+
+        function clearAll() {
+            if (isPlayingAudio) stopAudioPlayback();
+            currentMorse = "";
+            renderMorseDisplay();
+            historyText.textContent = "";
+            if (autoEvalTimeout) clearTimeout(autoEvalTimeout);
+            if (autoSpaceTimeout) clearTimeout(autoSpaceTimeout);
+            resetTimerDisplay();
+            
+            // Srdce a animace se aktivují jen při kompletním smazání (resetu)
+            isIdleState = true;
+            charDisplayFront.textContent = '❤️';
+            charDisplayWrapper.classList.remove('unknown');
+            startHeartAnimation();
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.repeat) return;
+
+            if (e.code === 'NumpadDecimal' || e.code === 'NumpadDelete' || e.key === 'ArrowLeft') {
+                e.preventDefault();
+                handleInput('.');
+            } else if (e.code === 'NumpadEnter' || e.key === 'ArrowRight') {
+                e.preventDefault();
+                handleInput('-');
+            } else if (e.code === 'Space') {
+                e.preventDefault();
+                clearAll();
+            }
+        });
+
+        // Inicializace při načtení
+        renderAlphabet(true);
+        startHeartAnimation();
+    </script>
+</body>
+</html>
