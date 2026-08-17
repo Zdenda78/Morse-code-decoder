@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="cs">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -59,33 +59,6 @@
             padding: 2rem 1rem;
             transition: background-color 0.3s ease, color 0.3s ease;
             position: relative;
-        }
-        /* HORNÍ LIŠTA PRO NÁSTROJE */
-        .top-bar-left {
-            position: absolute;
-            top: 15px;
-            left: 20px;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            z-index: 100;
-        }
-        .lang-flag {
-            font-size: 0.9rem;
-            font-weight: 700;
-            cursor: pointer;
-            color: var(--text-secondary);
-            padding: 2px 6px;
-            border-radius: 6px;
-            border: 1px solid transparent;
-            transition: all 0.15s ease;
-            user-select: none;
-        }
-        .lang-flag:hover, .lang-flag.active {
-            color: var(--accent-color);
-            border-color: var(--border-color);
-            background: var(--card-bg);
-            transform: scale(1.1);
         }
         .top-bar-right {
             position: absolute;
@@ -421,24 +394,19 @@
     </style>
 </head>
 <body data-theme="dark">
-    <!-- LEVÝ HORNÍ ROH: ZKRATKY JAZYKŮ -->
-    <div class="top-bar-left">
-        <span class="lang-flag active" onclick="setLanguage('cs', event)" title="Čeština">CZ</span>
-        <span class="lang-flag" onclick="setLanguage('en', event)" title="English">EN</span>
-    </div>
-    <!-- PRAVÝ HORNÍ ROH: PŘEPÍNAČ TMADÉHO / SVĚTLÉHO MÓDU -->
+    <!-- Top-right: Theme toggle -->
     <div class="top-bar-right">
-        <button class="theme-toggle-btn" id="themeBtn" onclick="toggleTheme()" title="Přepnout režim">🌙</button>
+        <button class="theme-toggle-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle theme">🌙</button>
     </div>
     <header>
-        <h1 id="appTitle">DEKÓDÉR MORSEOVY ABECEDY</h1>
+        <h1 id="appTitle">MORSE CODE DECODER</h1>
     </header>
     <div class="wrapper">
         <div class="left-sidebar">
             <aside class="cheat-sheet-card left-panel">
-                <div class="cheat-sheet-title" id="titleAlphabet">ABECEDA (A–Z)</div>
+                <div class="cheat-sheet-title" id="titleAlphabet">ALPHABET (A–Z)</div>
                 <div class="cheat-letters-grid" id="cheatLettersGrid">
-                    <!-- Dynamicky generováno podle zvoleného jazyka -->
+                    <!-- Dynamically generated -->
                 </div>
             </aside>
             <div class="timer-display" id="timerDisplay">0.0</div>
@@ -453,27 +421,27 @@
             <div class="morse-code-display" id="morseDisplay"></div>
             <div class="key-hints">
                 <div class="key-btn dot-btn" id="dotKeyIndicator">
-                    <span class="key-name" id="labelDotKey">← NumPad ( , / Entf )</span>
-                    <span class="key-action" id="labelDotAction">Tečka ( • )</span>
+                    <span class="key-name" id="labelDotKey">← / NumPad ( . / Del )</span>
+                    <span class="key-action" id="labelDotAction">Dot ( • )</span>
                 </div>
                 <div class="key-btn dash-btn" id="dashKeyIndicator">
                     <span class="key-name" id="labelDashKey">NumPad (Enter) →</span>
-                    <span class="key-action" id="labelDashAction">Čárka ( − )</span>
+                    <span class="key-action" id="labelDashAction">Dash ( − )</span>
                 </div>
             </div>
         </main>
         <section class="history-container">
             <div class="history-header">
-                <div class="history-title" id="historyTitle">Dekódovaný text (Mezerník = Smazat vše)</div>
+                <div class="history-title" id="historyTitle">Decoded Text (Spacebar = Clear All)</div>
                 <button class="play-audio-btn" id="playAudioBtn" onclick="togglePlayTextAudio()">
                     <span id="playIcon">🔊</span>
-                    <span id="playLabel">Přehrát</span>
+                    <span id="playLabel">Play</span>
                 </button>
             </div>
             <div class="history-text" id="historyText" tabindex="0"></div>
         </section>
         <aside class="cheat-sheet-card right-panel">
-            <div class="cheat-sheet-title" id="titleDigits">ČÍSLICE (0–9)</div>
+            <div class="cheat-sheet-title" id="titleDigits">DIGITS (0–9)</div>
             <div class="cheat-numbers-grid">
                 <div class="cheat-row"><span class="cheat-char">0</span><span class="cheat-code">−−−−−</span></div>
                 <div class="cheat-row"><span class="cheat-char">1</span><span class="cheat-code">•−−−−</span></div>
@@ -486,7 +454,7 @@
                 <div class="cheat-row"><span class="cheat-char">8</span><span class="cheat-code">−−−••</span></div>
                 <div class="cheat-row"><span class="cheat-char">9</span><span class="cheat-code">−−−−•</span></div>
             </div>
-            <div class="cheat-sheet-title cheat-sheet-subtitle" id="titleSymbols">ZNAKY</div>
+            <div class="cheat-sheet-title cheat-sheet-subtitle" id="titleSymbols">SYMBOLS</div>
             <div class="cheat-numbers-grid">
                 <div class="cheat-row"><span class="cheat-char">.</span><span class="cheat-code">•−•−•−</span></div>
                 <div class="cheat-row"><span class="cheat-char">,</span><span class="cheat-code">−−••−−</span></div>
@@ -504,65 +472,14 @@
         </aside>
     </div>
     <footer>
-        <p id="footerText">Aplikace pro výuku a dekódování Morseovy abecedy. Aplikace od Zdeněk Sába_2026.</p>
+        <p id="footerText">Application for learning and decoding Morse code. App by Zdeněk Sába_2026.</p>
     </footer>
     <script>
-        let currentLang = 'cs';
         let isPlayingAudio = false;
         let audioPlaybackTimeouts = [];
         let rawHistoryText = "";
 
-        const TRANSLATIONS = {
-            cs: {
-                title: "DEKÓDÉR MORSEOVY ABECEDY",
-                alphabet: "ABECEDA (A–Z)",
-                hasCH: true,
-                digits: "ČÍSLICE (0–9)",
-                symbols: "ZNAKY",
-                dotKey: "← NumPad ( , / Entf )",
-                dotAction: "Tečka ( • )",
-                dashKey: "NumPad (Enter) →",
-                dashAction: "Čárka ( − )",
-                historyTitle: "Dekódovaný text (Mezerník = Smazat vše)",
-                footer: "Aplikace pro výuku a dekódování Morseovy abecedy. Aplikace od Zdeněk Sába_2026.",
-                playText: "Přehrát",
-                stopText: "Zastavit"
-            },
-            en: {
-                title: "MORSE CODE DECODER",
-                alphabet: "ALPHABET (A–Z)",
-                hasCH: false,
-                digits: "DIGITS (0–9)",
-                symbols: "SYMBOLS",
-                dotKey: "← / NumPad ( . / Del )",
-                dotAction: "Dot ( • )",
-                dashKey: "NumPad (Enter) →",
-                dashAction: "Dash ( − )",
-                historyTitle: "Decoded Text (Spacebar = Clear All)",
-                footer: "Application for learning and decoding Morse code. App by Zdeněk Sába_2026.",
-                playText: "Play",
-                stopText: "Stop"
-            }
-        };
-
-        const ALPHABET_CS = [
-            { char: "A", code: "•−" }, { char: "N", code: "−•" },
-            { char: "B", code: "−•••" }, { char: "O", code: "−−−" },
-            { char: "C", code: "−•−•" }, { char: "P", code: "•−−•" },
-            { char: "D", code: "−••" }, { char: "Q", code: "−−•−" },
-            { char: "E", code: "•" }, { char: "R", code: "•−•" },
-            { char: "F", code: "••−•" }, { char: "S", code: "•••" },
-            { char: "G", code: "−−•" }, { char: "T", code: "−" },
-            { char: "H", code: "••••" }, { char: "U", code: "••−" },
-            { char: "CH", code: "−−−−" }, { char: "V", code: "•••−" },
-            { char: "I", code: "••" }, { char: "W", code: "•−−" },
-            { char: "J", code: "•−−−" }, { char: "X", code: "−••−" },
-            { char: "K", code: "−•−" }, { char: "Y", code: "−•−−" },
-            { char: "L", code: "•−••" }, { char: "Z", code: "−−••" },
-            { char: "M", code: "−−" }
-        ];
-
-        const ALPHABET_INT = [
+        const ALPHABET = [
             { char: "A", code: "•−" }, { char: "N", code: "−•" },
             { char: "B", code: "−•••" }, { char: "O", code: "−−−" },
             { char: "C", code: "−•−•" }, { char: "P", code: "•−−•" },
@@ -591,50 +508,15 @@
             '"': ".-..-.", "-": "-....-", "_": "..--.-", "@": ".--.-."
         };
 
-        function renderAlphabet(isCS) {
+        function renderAlphabet() {
             const grid = document.getElementById('cheatLettersGrid');
             grid.innerHTML = '';
-            const list = isCS ? ALPHABET_CS : ALPHABET_INT;
-            
-            list.forEach(item => {
+            ALPHABET.forEach(item => {
                 const row = document.createElement('div');
                 row.className = 'cheat-row';
                 row.innerHTML = `<span class="cheat-char">${item.char}</span><span class="cheat-code">${item.code}</span>`;
                 grid.appendChild(row);
             });
-            if (isCS) {
-                const emptyRow = document.createElement('div');
-                emptyRow.className = 'cheat-row';
-                grid.appendChild(emptyRow);
-            }
-        }
-
-        function setLanguage(lang, e) {
-            currentLang = lang;
-            const t = TRANSLATIONS[lang] || TRANSLATIONS.cs;
-            document.getElementById('appTitle').textContent = t.title;
-            document.getElementById('titleAlphabet').textContent = t.alphabet;
-            document.getElementById('titleDigits').textContent = t.digits;
-            document.getElementById('titleSymbols').textContent = t.symbols;
-            document.getElementById('labelDotKey').textContent = t.dotKey;
-            document.getElementById('labelDotAction').textContent = t.dotAction;
-            document.getElementById('labelDashKey').textContent = t.dashKey;
-            document.getElementById('labelDashAction').textContent = t.dashAction;
-            document.getElementById('historyTitle').textContent = t.historyTitle;
-            document.getElementById('footerText').textContent = t.footer;
-            
-            const playLabel = document.getElementById('playLabel');
-            if (isPlayingAudio) {
-                playLabel.textContent = t.stopText;
-            } else {
-                playLabel.textContent = t.playText;
-            }
-
-            renderAlphabet(t.hasCH);
-            document.querySelectorAll('.lang-flag').forEach(el => el.classList.remove('active'));
-            if (e && e.target) {
-                e.target.classList.add('active');
-            }
         }
 
         function toggleTheme() {
@@ -655,7 +537,7 @@
             "-.-": "K", ".-..": "L", "--": "M", "-.": "N", "---": "O",
             ".--.": "P", "--.-": "Q", ".-.": "R", "...": "S", "-": "T",
             "..-": "U", "...-": "V", ".--": "W", "-..-": "X", "-.--": "Y",
-            "--..": "Z", "----": "CH",
+            "--..": "Z",
             "-----": "0", ".----": "1", "..---": "2", "...--": "3", "....-": "4",
             ".....": "5", "-....": "6", "--...": "7", "---..": "8", "----.": "9",
             ".-.-.-": ".", "--..--": ",", "..--..": "?", "--..-": "!",
@@ -727,11 +609,10 @@
             const btn = document.getElementById('playAudioBtn');
             const icon = document.getElementById('playIcon');
             const label = document.getElementById('playLabel');
-            const t = TRANSLATIONS[currentLang] || TRANSLATIONS.cs;
 
             btn.classList.remove('playing');
             icon.textContent = '🔊';
-            label.textContent = t.playText;
+            label.textContent = 'Play';
         }
 
         function togglePlayTextAudio() {
@@ -749,11 +630,10 @@
             const btn = document.getElementById('playAudioBtn');
             const icon = document.getElementById('playIcon');
             const label = document.getElementById('playLabel');
-            const t = TRANSLATIONS[currentLang] || TRANSLATIONS.cs;
 
             btn.classList.add('playing');
             icon.textContent = '⏹️';
-            label.textContent = t.stopText;
+            label.textContent = 'Stop';
 
             const unit = 80;
             let currentTime = 0;
@@ -764,10 +644,7 @@
                 let charLen = 1;
                 let charStartIndex = i;
 
-                if (i < text.length - 1 && text.substring(i, i + 2) === "CH") {
-                    code = "----";
-                    charLen = 2;
-                } else if (text[i] === " ") {
+                if (text[i] === " ") {
                     currentTime += unit * 7;
                     i++;
                     continue;
@@ -814,7 +691,7 @@
         let timerInterval = null;
         let timerInactivityTimeout = null;
         let timerStartTime = null;
-        let lastInputTime = null;          // ← nová proměnná
+        let lastInputTime = null;
         let isTiming = false;
         let heartFlipInterval = null;
         let isFlipped = false;
@@ -849,7 +726,6 @@
                     timerDisplay.textContent = formatTime(elapsed);
                 }, 100);
             } else {
-                // časovač už běží → aktualizujeme čas posledního stisku
                 lastInputTime = Date.now();
             }
         }
@@ -857,7 +733,6 @@
         function resetInactivityTimer() {
             if (timerInactivityTimeout) clearTimeout(timerInactivityTimeout);
             
-            // Po 3 sekundách od posledního znaku odečteme 3 s a zastavíme
             timerInactivityTimeout = setTimeout(() => {
                 if (isTiming && lastInputTime && timerStartTime) {
                     const elapsedToLastInput = (lastInputTime - timerStartTime) / 1000;
@@ -989,7 +864,6 @@
             if (autoSpaceTimeout) clearTimeout(autoSpaceTimeout);
             resetTimerDisplay();
             
-            // Srdce a animace se aktivují jen při kompletním smazání (resetu)
             isIdleState = true;
             charDisplayFront.textContent = '❤️';
             charDisplayWrapper.classList.remove('unknown');
@@ -1011,8 +885,8 @@
             }
         });
 
-        // Inicializace při načtení
-        renderAlphabet(true);
+        // Initialization
+        renderAlphabet();
         startHeartAnimation();
     </script>
 </body>
