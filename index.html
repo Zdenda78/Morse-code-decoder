@@ -118,6 +118,34 @@
             position: relative;
             transition: background-color 0.3s ease, border-color 0.3s ease;
         }
+        .train-btn {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            background: var(--btn-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            font-size: 0.78rem;
+            font-weight: 600;
+            padding: 5px 11px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            user-select: none;
+            z-index: 10;
+        }
+        .train-btn:hover {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+            transform: scale(1.03);
+        }
+        .train-btn.playing {
+            border-color: var(--dash-color);
+            color: var(--dash-color);
+        }
         .char-display-wrapper {
             width: 100%;
             height: 140px;
@@ -394,7 +422,6 @@
     </style>
 </head>
 <body data-theme="dark">
-    <!-- Top-right: Theme toggle -->
     <div class="top-bar-right">
         <button class="theme-toggle-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle theme">🌙</button>
     </div>
@@ -404,14 +431,17 @@
     <div class="wrapper">
         <div class="left-sidebar">
             <aside class="cheat-sheet-card left-panel">
-                <div class="cheat-sheet-title" id="titleAlphabet">ALPHABET (A–Z)</div>
-                <div class="cheat-letters-grid" id="cheatLettersGrid">
-                    <!-- Dynamically generated -->
-                </div>
+                <div class="cheat-sheet-title">ALPHABET (A–Z)</div>
+                <div class="cheat-letters-grid" id="cheatLettersGrid"></div>
             </aside>
             <div class="timer-display" id="timerDisplay">0.0</div>
         </div>
         <main class="main-card">
+            <button class="train-btn" id="trainBtn" onclick="toggleTrainingMode()">
+                <span id="trainIcon">🎧</span>
+                <span id="trainLabel">Listen & Code</span>
+            </button>
+
             <div class="char-display-wrapper" id="charDisplayWrapper">
                 <div class="flip-card-inner" id="flipCardInner">
                     <div class="flip-card-front" id="charDisplayFront">❤️</div>
@@ -421,18 +451,18 @@
             <div class="morse-code-display" id="morseDisplay"></div>
             <div class="key-hints">
                 <div class="key-btn dot-btn" id="dotKeyIndicator">
-                    <span class="key-name" id="labelDotKey">← / NumPad ( . / Del )</span>
-                    <span class="key-action" id="labelDotAction">Dot ( • )</span>
+                    <span class="key-name">← / NumPad ( . / Del )</span>
+                    <span class="key-action">Dot ( • )</span>
                 </div>
                 <div class="key-btn dash-btn" id="dashKeyIndicator">
-                    <span class="key-name" id="labelDashKey">NumPad (Enter) →</span>
-                    <span class="key-action" id="labelDashAction">Dash ( − )</span>
+                    <span class="key-name">NumPad (Enter) →</span>
+                    <span class="key-action">Dash ( − )</span>
                 </div>
             </div>
         </main>
         <section class="history-container">
             <div class="history-header">
-                <div class="history-title" id="historyTitle">Decoded Text (Spacebar = Clear All)</div>
+                <div class="history-title">Decoded Text (Spacebar = Clear All)</div>
                 <button class="play-audio-btn" id="playAudioBtn" onclick="togglePlayTextAudio()">
                     <span id="playIcon">🔊</span>
                     <span id="playLabel">Play</span>
@@ -441,7 +471,7 @@
             <div class="history-text" id="historyText" tabindex="0"></div>
         </section>
         <aside class="cheat-sheet-card right-panel">
-            <div class="cheat-sheet-title" id="titleDigits">DIGITS (0–9)</div>
+            <div class="cheat-sheet-title">DIGITS (0–9)</div>
             <div class="cheat-numbers-grid">
                 <div class="cheat-row"><span class="cheat-char">0</span><span class="cheat-code">−−−−−</span></div>
                 <div class="cheat-row"><span class="cheat-char">1</span><span class="cheat-code">•−−−−</span></div>
@@ -454,7 +484,7 @@
                 <div class="cheat-row"><span class="cheat-char">8</span><span class="cheat-code">−−−••</span></div>
                 <div class="cheat-row"><span class="cheat-char">9</span><span class="cheat-code">−−−−•</span></div>
             </div>
-            <div class="cheat-sheet-title cheat-sheet-subtitle" id="titleSymbols">SYMBOLS</div>
+            <div class="cheat-sheet-title cheat-sheet-subtitle">SYMBOLS</div>
             <div class="cheat-numbers-grid">
                 <div class="cheat-row"><span class="cheat-char">.</span><span class="cheat-code">•−•−•−</span></div>
                 <div class="cheat-row"><span class="cheat-char">,</span><span class="cheat-code">−−••−−</span></div>
@@ -462,7 +492,7 @@
                 <div class="cheat-row"><span class="cheat-char">!</span><span class="cheat-code">−−••−</span></div>
                 <div class="cheat-row"><span class="cheat-char">;</span><span class="cheat-code">−•−•−•</span></div>
                 <div class="cheat-row"><span class="cheat-char">:</span><span class="cheat-code">−−−•••</span></div>
-                <div class="cheat-row"><span class="cheat-char">(</span><span class="cheat-code">-•--•</span></div>
+                <div class="cheat-row"><span class="cheat-char">(</span><span class="cheat-code">−•−−•</span></div>
                 <div class="cheat-row"><span class="cheat-char">)</span><span class="cheat-code">−•−−•−</span></div>
                 <div class="cheat-row"><span class="cheat-char">"</span><span class="cheat-code">•−••−•</span></div>
                 <div class="cheat-row"><span class="cheat-char">-</span><span class="cheat-code">−••••−</span></div>
@@ -472,12 +502,19 @@
         </aside>
     </div>
     <footer>
-        <p id="footerText">Application for learning and decoding Morse code. App by Zdeněk Sába_2026.</p>
+        <p>Application for learning and decoding Morse code. App by Zdeněk Sába_2026.</p>
     </footer>
     <script>
         let isPlayingAudio = false;
         let audioPlaybackTimeouts = [];
         let rawHistoryText = "";
+
+        // Training mode
+        let isTrainingMode = false;
+        let trainingTimeouts = [];
+        let currentTrainingChar = null;
+        let currentTrainingCode = null;
+        let pendingTrainingAction = null;
 
         const ALPHABET = [
             { char: "A", code: "•−" }, { char: "N", code: "−•" },
@@ -685,26 +722,13 @@
             audioPlaybackTimeouts.push(finishTimer);
         }
 
-        let currentMorse = "";
-        let autoEvalTimeout = null;
-        let autoSpaceTimeout = null;
+        // ===== TIMER =====
         let timerInterval = null;
         let timerInactivityTimeout = null;
         let timerStartTime = null;
         let lastInputTime = null;
         let isTiming = false;
-        let heartFlipInterval = null;
-        let isFlipped = false;
-        let isIdleState = true;
 
-        const charDisplayWrapper = document.getElementById('charDisplayWrapper');
-        const flipCardInner = document.getElementById('flipCardInner');
-        const charDisplayFront = document.getElementById('charDisplayFront');
-        const charDisplayBack = document.getElementById('charDisplayBack');
-        const morseDisplay = document.getElementById('morseDisplay');
-        const historyText = document.getElementById('historyText');
-        const dotIndicator = document.getElementById('dotKeyIndicator');
-        const dashIndicator = document.getElementById('dashKeyIndicator');
         const timerDisplay = document.getElementById('timerDisplay');
 
         function formatTime(seconds) {
@@ -717,6 +741,8 @@
         }
 
         function startTimer() {
+            if (isTrainingMode) return;
+
             if (!isTiming) {
                 isTiming = true;
                 timerStartTime = Date.now();
@@ -731,6 +757,8 @@
         }
 
         function resetInactivityTimer() {
+            if (isTrainingMode) return;
+
             if (timerInactivityTimeout) clearTimeout(timerInactivityTimeout);
             
             timerInactivityTimeout = setTimeout(() => {
@@ -753,13 +781,21 @@
             stopTimer();
             if (timerInactivityTimeout) clearTimeout(timerInactivityTimeout);
             lastInputTime = null;
+            timerStartTime = null;
             timerDisplay.textContent = "0.0";
         }
+
+        // ===== HEART / 73 FLIP ANIMATION =====
+        let heartFlipInterval = null;
+        let isFlipped = false;
+        let isIdleState = true;
+
+        const flipCardInner = document.getElementById('flipCardInner');
 
         function startHeartAnimation() {
             if (!heartFlipInterval) {
                 heartFlipInterval = setInterval(() => {
-                    if (isIdleState) {
+                    if (isIdleState && !isTrainingMode) {
                         isFlipped = !isFlipped;
                         if (isFlipped) {
                             flipCardInner.classList.add('flipped');
@@ -776,116 +812,251 @@
                 clearInterval(heartFlipInterval);
                 heartFlipInterval = null;
             }
+            flipCardInner.classList.remove('flipped');
+            isFlipped = false;
         }
 
-        function renderMorseDisplay() {
-            morseDisplay.innerHTML = '';
-            for (let char of currentMorse) {
+        // ===== INPUT / DECODER =====
+        let currentMorse = "";
+        let letterTimeout = null;
+        let wordTimeout = null;
+
+        function updateMorseDisplay() {
+            const display = document.getElementById('morseDisplay');
+            display.innerHTML = '';
+            for (const c of currentMorse) {
                 const span = document.createElement('span');
-                span.className = 'morse-symbol ' + (char === '.' ? 'dot' : 'dash');
-                span.textContent = char === '.' ? '•' : '−';
-                morseDisplay.appendChild(span);
+                span.className = 'morse-symbol ' + (c === '.' ? 'dot' : 'dash');
+                span.textContent = c === '.' ? '•' : '−';
+                display.appendChild(span);
             }
         }
 
-        function handleInput(symbol) {
+        function showChar(char, isUnknown = false) {
+            const wrapper = document.getElementById('charDisplayWrapper');
+            const front = document.getElementById('charDisplayFront');
+
+            flipCardInner.classList.remove('flipped');
+            isFlipped = false;
+
+            wrapper.classList.remove('unknown');
+            if (isUnknown) {
+                wrapper.classList.add('unknown');
+                front.textContent = char || '❓';
+            } else {
+                front.textContent = char || '❤️';
+            }
+
+            wrapper.classList.add('active');
+            setTimeout(() => wrapper.classList.remove('active'), 120);
+        }
+
+        function appendToHistory(char) {
+            const historyEl = document.getElementById('historyText');
+            historyEl.textContent += char;
+            rawHistoryText = historyEl.textContent;
+            historyEl.scrollTop = historyEl.scrollHeight;
+        }
+
+        function finalizeLetter() {
+            if (!currentMorse) return;
+
+            const decoded = MORSE_MAP[currentMorse] || null;
+
+            if (isTrainingMode) {
+                if (decoded && decoded === currentTrainingChar) {
+                    showChar(decoded, false);
+                    pendingTrainingAction = 'next';
+                    const t = setTimeout(() => {
+                        if (isTrainingMode && pendingTrainingAction === 'next') {
+                            pickAndPlayRandomTrainingLetter();
+                        }
+                    }, 1000);
+                    trainingTimeouts.push(t);
+                } else {
+                    showChar('👂', true);
+                    pendingTrainingAction = 'replay';
+                    const t = setTimeout(() => {
+                        if (isTrainingMode && pendingTrainingAction === 'replay') {
+                            playMorseCode(currentTrainingCode);
+                        }
+                    }, 1000);
+                    trainingTimeouts.push(t);
+                }
+            } else {
+                if (decoded) {
+                    showChar(decoded, false);
+                    appendToHistory(decoded);
+                } else {
+                    showChar('❓', true);
+                }
+            }
+
+            currentMorse = "";
+            updateMorseDisplay();
+        }
+
+        function onDotOrDash(isDot) {
             if (isPlayingAudio) stopAudioPlayback();
-            
+
             if (isIdleState) {
                 isIdleState = false;
                 stopHeartAnimation();
             }
-            
-            if (isFlipped) {
-                flipCardInner.classList.remove('flipped');
-                isFlipped = false;
-            }
 
-            if (symbol === '.') {
-                playTone(80, 700);
-                dotIndicator.classList.add('active');
-                setTimeout(() => dotIndicator.classList.remove('active'), 120);
-            } else if (symbol === '-') {
-                playTone(240, 700);
-                dashIndicator.classList.add('active');
-                setTimeout(() => dashIndicator.classList.remove('active'), 120);
-            }
+            if (letterTimeout) clearTimeout(letterTimeout);
+            if (wordTimeout) clearTimeout(wordTimeout);
 
-            currentMorse += symbol;
-            renderMorseDisplay();
+            currentMorse += isDot ? '.' : '-';
+            updateMorseDisplay();
 
-            charDisplayWrapper.classList.remove('unknown');
-            charDisplayFront.textContent = MORSE_MAP[currentMorse] || '?';
+            playTone(isDot ? 80 : 240, 700);
 
-            if (autoEvalTimeout) clearTimeout(autoEvalTimeout);
-            if (autoSpaceTimeout) clearTimeout(autoSpaceTimeout);
+            const btn = document.getElementById(isDot ? 'dotKeyIndicator' : 'dashKeyIndicator');
+            btn.classList.add('active');
+            setTimeout(() => btn.classList.remove('active'), 100);
 
-            startTimer();
-            resetInactivityTimer();
-
-            autoEvalTimeout = setTimeout(() => {
-                evaluateMorse();
-            }, LETTER_TIMEOUT_MS);
-        }
-
-        function evaluateMorse() {
-            if (!currentMorse) return;
-
-            const decodedChar = MORSE_MAP[currentMorse];
-
-            if (decodedChar) {
-                historyText.textContent += decodedChar;
-                charDisplayFront.textContent = decodedChar;
-                charDisplayWrapper.classList.remove('unknown');
-            } else {
-                charDisplayFront.textContent = '?';
-                charDisplayWrapper.classList.add('unknown');
-            }
-
-            charDisplayWrapper.classList.add('active');
-            setTimeout(() => charDisplayWrapper.classList.remove('active'), 150);
-
-            currentMorse = "";
-            renderMorseDisplay();
-
-            autoSpaceTimeout = setTimeout(() => {
-                if (historyText.textContent.length > 0 && !historyText.textContent.endsWith(' ')) {
-                    historyText.textContent += ' ';
+            if (!isTrainingMode) {
+                const preview = MORSE_MAP[currentMorse] || '?';
+                const wrapper = document.getElementById('charDisplayWrapper');
+                const front = document.getElementById('charDisplayFront');
+                front.textContent = preview;
+                if (preview === '?') {
+                    wrapper.classList.add('unknown');
+                } else {
+                    wrapper.classList.remove('unknown');
                 }
-            }, WORD_TIMEOUT_MS - LETTER_TIMEOUT_MS);
-        }
+            }
 
-        function clearAll() {
-            if (isPlayingAudio) stopAudioPlayback();
-            currentMorse = "";
-            renderMorseDisplay();
-            historyText.textContent = "";
-            if (autoEvalTimeout) clearTimeout(autoEvalTimeout);
-            if (autoSpaceTimeout) clearTimeout(autoSpaceTimeout);
-            resetTimerDisplay();
-            
-            isIdleState = true;
-            charDisplayFront.textContent = '❤️';
-            charDisplayWrapper.classList.remove('unknown');
-            startHeartAnimation();
+            if (!isTrainingMode) {
+                startTimer();
+                resetInactivityTimer();
+            }
+
+            letterTimeout = setTimeout(() => {
+                finalizeLetter();
+                if (!isTrainingMode) {
+                    wordTimeout = setTimeout(() => {
+                        appendToHistory(' ');
+                    }, WORD_TIMEOUT_MS - LETTER_TIMEOUT_MS);
+                }
+            }, LETTER_TIMEOUT_MS);
         }
 
         document.addEventListener('keydown', (e) => {
             if (e.repeat) return;
 
-            if (e.code === 'NumpadDecimal' || e.code === 'NumpadDelete' || e.key === 'ArrowLeft') {
+            if (e.code === 'Space') {
                 e.preventDefault();
-                handleInput('.');
-            } else if (e.code === 'NumpadEnter' || e.key === 'ArrowRight') {
+                if (!isTrainingMode) {
+                    // Stop any playing audio first, then clear everything
+                    if (isPlayingAudio) stopAudioPlayback();
+
+                    document.getElementById('historyText').textContent = '';
+                    rawHistoryText = '';
+                    currentMorse = '';
+                    updateMorseDisplay();
+                    resetTimerDisplay();
+
+                    // restore heart + animation
+                    isIdleState = true;
+                    showChar('❤️');
+                    startHeartAnimation();
+                }
+                return;
+            }
+
+            if (e.code === 'NumpadDecimal' || e.code === 'Comma' || e.code === 'Delete' || e.code === 'Period' || e.key === ',' || e.code === 'NumpadDelete' || e.key === 'ArrowLeft') {
                 e.preventDefault();
-                handleInput('-');
-            } else if (e.code === 'Space') {
+                onDotOrDash(true);
+                return;
+            }
+
+            if (e.code === 'NumpadEnter' || (e.code === 'Enter' && e.location === 3) || e.key === 'ArrowRight') {
                 e.preventDefault();
-                clearAll();
+                onDotOrDash(false);
             }
         });
 
-        // Initialization
+        // ===== TRAINING MODE =====
+        function stopTrainingMode() {
+            isTrainingMode = false;
+            trainingTimeouts.forEach(t => clearTimeout(t));
+            trainingTimeouts = [];
+            pendingTrainingAction = null;
+            currentTrainingChar = null;
+            currentTrainingCode = null;
+
+            const btn = document.getElementById('trainBtn');
+            const icon = document.getElementById('trainIcon');
+            const label = document.getElementById('trainLabel');
+
+            btn.classList.remove('playing');
+            icon.textContent = '🎧';
+            label.textContent = 'Listen & Code';
+
+            currentMorse = '';
+            updateMorseDisplay();
+            resetTimerDisplay();
+
+            isIdleState = true;
+            showChar('❤️');
+            startHeartAnimation();
+        }
+
+        function playMorseCode(code) {
+            const unit = 80;
+            let t = 0;
+            for (const c of code) {
+                const dur = c === '.' ? unit : unit * 3;
+                const timer = setTimeout(() => playTone(dur, 700), t);
+                trainingTimeouts.push(timer);
+                t += dur + unit;
+            }
+        }
+
+        function pickAndPlayRandomTrainingLetter() {
+            if (!isTrainingMode) return;
+
+            const item = ALPHABET[Math.floor(Math.random() * ALPHABET.length)];
+
+            currentTrainingChar = item.char;
+            currentTrainingCode = item.code
+                .replace(/•/g, '.')
+                .replace(/−/g, '-');
+
+            currentMorse = '';
+            updateMorseDisplay();
+            showChar('🎧');
+
+            playMorseCode(currentTrainingCode);
+        }
+
+        function toggleTrainingMode() {
+            if (isTrainingMode) {
+                stopTrainingMode();
+                return;
+            }
+
+            if (isPlayingAudio) stopAudioPlayback();
+
+            isTrainingMode = true;
+            isIdleState = false;
+            stopHeartAnimation();
+            resetTimerDisplay();
+
+            const btn = document.getElementById('trainBtn');
+            const icon = document.getElementById('trainIcon');
+            const label = document.getElementById('trainLabel');
+
+            btn.classList.add('playing');
+            icon.textContent = '⏹️';
+            label.textContent = 'Stop Training';
+
+            pickAndPlayRandomTrainingLetter();
+        }
+
+        // Init
         renderAlphabet();
         startHeartAnimation();
     </script>
