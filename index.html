@@ -118,10 +118,9 @@
             position: relative;
             transition: background-color 0.3s ease, border-color 0.3s ease;
         }
-        .train-btn {
+        .train-btn, .info-btn {
             position: absolute;
             top: 14px;
-            right: 14px;
             background: var(--btn-bg);
             border: 1px solid var(--border-color);
             color: var(--text-primary);
@@ -137,7 +136,13 @@
             user-select: none;
             z-index: 10;
         }
-        .train-btn:hover {
+        .train-btn {
+            right: 14px;
+        }
+        .info-btn {
+            left: 14px;
+        }
+        .train-btn:hover, .info-btn:hover {
             border-color: var(--accent-color);
             color: var(--accent-color);
             transform: scale(1.03);
@@ -269,6 +274,52 @@
             width: 100%;
             text-align: center;
             transition: color 0.3s ease;
+        }
+        .paddle-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            margin-top: 0.5rem;
+        }
+        .mic-btn {
+            background: var(--btn-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            font-size: 0.78rem;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+        .mic-btn:hover {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+            transform: scale(1.03);
+        }
+        .mic-btn.active {
+            border-color: var(--dot-color);
+            color: var(--dot-color);
+            background: rgba(63, 185, 80, 0.1);
+        }
+        .wpm-select {
+            background: var(--btn-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            outline: none;
+        }
+        .wpm-select:hover, .wpm-select:focus {
+            border-color: var(--accent-color);
         }
         .history-container {
             width: 100%;
@@ -419,6 +470,75 @@
             color: var(--text-secondary);
             text-align: center;
         }
+
+        /* ===== INFO MODAL ===== */
+        .info-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .info-overlay.visible {
+            display: flex;
+        }
+        .info-modal {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 20px;
+            padding: 2rem 2.2rem;
+            width: 90%;
+            max-width: 520px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 0 40px rgba(255, 255, 255, 0.15),
+                        0 20px 50px rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(18px);
+            color: #a0a0a0;
+            position: relative;
+            animation: fadeInScale 0.25s ease;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .info-modal::-webkit-scrollbar {
+            display: none;
+        }
+        [data-theme="light"] .info-modal {
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.6),
+                        0 15px 40px rgba(0, 0, 0, 0.12);
+            color: #555;
+        }
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.92); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+        .info-modal h2 {
+            font-size: 1.25rem;
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .info-modal h3 {
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            margin: 1.1rem 0 0.4rem;
+            font-weight: 600;
+        }
+        .info-modal p, .info-modal li {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 0.35rem;
+        }
+        .info-modal ul {
+            padding-left: 1.2rem;
+            margin-bottom: 0.6rem;
+        }
     </style>
 </head>
 <body data-theme="dark">
@@ -435,8 +555,27 @@
                 <div class="cheat-letters-grid" id="cheatLettersGrid"></div>
             </aside>
             <div class="timer-display" id="timerDisplay">0.0</div>
+
+            <div class="paddle-controls">
+                <button class="mic-btn" id="paddleBtn" onclick="togglePaddle()">
+                    <span id="paddleIcon">🎙️</span>
+                    <span id="paddleLabel">Morse paddle</span>
+                </button>
+                <select class="wpm-select" id="wpmSelect" onchange="updatePaddleWpm()" title="Paddle speed (WPM)">
+                    <option value="10">10 WPM</option>
+                    <option value="15">15 WPM</option>
+                    <option value="20" selected>20 WPM</option>
+                    <option value="25">25 WPM</option>
+                    <option value="30">30 WPM</option>
+                </select>
+            </div>
         </div>
         <main class="main-card">
+            <button class="info-btn" id="infoBtn" onclick="openInfoModal()">
+                <span>ℹ️</span>
+                <span>Info</span>
+            </button>
+
             <button class="train-btn" id="trainBtn" onclick="toggleTrainingMode()">
                 <span id="trainIcon">🎧</span>
                 <span id="trainLabel">Listen & Code</span>
@@ -504,6 +643,47 @@
     <footer>
         <p>Application for learning and decoding Morse code. App by Zdeněk Sába_2026.</p>
     </footer>
+
+    <!-- INFO MODAL -->
+    <div class="info-overlay" id="infoOverlay" onclick="closeInfoModal(event)">
+        <div class="info-modal" onclick="event.stopPropagation()">
+            <h2>ℹ️ About this Application</h2>
+
+            <p>
+                Morse Code Decoder / Trainer is a simple tool for learning, practicing and decoding Morse code.
+                It supports keyboard input, an external dual-lever paddle connected via the 3.5 mm microphone jack.
+            </p>
+
+            <h3>Keyboard</h3>
+            <ul>
+                <li><strong>Left Arrow & Numpad . / Del </strong> = Dot (•)</li>
+                <li><strong>Right Arrow & Numpad Enter</strong> = Dash (−)</li>
+                <li><strong>Spacebar =</strong> Full reset (clears everything and returns to the initial screen)</li>
+            </ul>
+
+            <h3>External Morse Paddle (3.5 mm jack)</h3>
+            <ul>
+                <li>Click the <strong>Morse paddle</strong> button to enable the microphone input</li>
+                <li>Select your sound card / Realtek microphone when the browser asks for permission</li>
+                <li>Use the <strong>WPM selector</strong> (10–30 WPM) to set realistic CW keyer speed (default 20 WPM)</li>
+            </ul>
+
+           
+            <h3>Other features</h3>
+            <ul>
+                <li><strong>Listen & Code</strong> – Training mode: the app plays a random letter, you reply with the correct Morse code</li>
+                <li><strong>Play</strong> – Plays the decoded text back in Morse code</li>
+                <li>Theme button (moon / sun) – Switches between dark and light mode</li>
+                <li>Live character preview and history of decoded text</li>
+                <li>The time is automatically rounded down to the exact value of the last tick after 3 seconds of inactivity.</li>
+            </ul>
+
+            <p style="font-size:0.85rem; opacity:0.7; margin-top:1.2rem;">
+                App by Zdeněk Sába • 2026
+            </p>
+        </div>
+    </div>
+
     <script>
         let isPlayingAudio = false;
         let audioPlaybackTimeouts = [];
@@ -515,6 +695,48 @@
         let currentTrainingChar = null;
         let currentTrainingCode = null;
         let pendingTrainingAction = null;
+
+        // Morse Paddle
+        let isPaddleOn = false;
+        let mediaStream = null;
+        let paddleAudioCtx = null;
+        let paddleAnalyserL = null;
+        let paddleAnalyserR = null;
+        let paddleDataL = null;
+        let paddleDataR = null;
+        let paddleRAF = null;
+
+        // Paddle WPM (only affects paddle + USB paddle)
+        let paddleWpm = 20;
+        const PADDLE_THRESHOLD = 6;
+
+        function getDitMs() {
+            return 1200 / paddleWpm;
+        }
+        function getPaddleRepeatDelay() {
+            return 2 * getDitMs();
+        }
+
+        function updatePaddleWpm() {
+            paddleWpm = parseInt(document.getElementById('wpmSelect').value, 10);
+            if (dotRepeatInterval) {
+                stopDotRepeat();
+                startDotRepeat(true);
+            }
+            if (dashRepeatInterval) {
+                stopDashRepeat();
+                startDashRepeat(true);
+            }
+        }
+
+        // Shared state for mic paddle + USB paddle
+        let gamepadInterval = null;
+        let lastDotPressed = false;
+        let lastDashPressed = false;
+        let lastMicDot = false;
+        let lastMicDash = false;
+        let dotRepeatInterval = null;
+        let dashRepeatInterval = null;
 
         const ALPHABET = [
             { char: "A", code: "•−" }, { char: "N", code: "−•" },
@@ -896,7 +1118,7 @@
             updateMorseDisplay();
         }
 
-        function onDotOrDash(isDot) {
+        function onDotOrDash(isDot, fromPaddle = false) {
             if (isPlayingAudio) stopAudioPlayback();
 
             if (isIdleState) {
@@ -910,7 +1132,14 @@
             currentMorse += isDot ? '.' : '-';
             updateMorseDisplay();
 
-            playTone(isDot ? 80 : 240, 700);
+            let toneMs;
+            if (fromPaddle) {
+                const dit = getDitMs();
+                toneMs = isDot ? dit : dit * 3;
+            } else {
+                toneMs = isDot ? 80 : 240;
+            }
+            playTone(toneMs, 700);
 
             const btn = document.getElementById(isDot ? 'dotKeyIndicator' : 'dashKeyIndicator');
             btn.classList.add('active');
@@ -943,38 +1172,45 @@
             }, LETTER_TIMEOUT_MS);
         }
 
+        // ===== FULL RESET (Spacebar) =====
+        function fullReset() {
+            if (isPlayingAudio) stopAudioPlayback();
+            if (isTrainingMode) stopTrainingMode();
+            stopTimer();
+            if (letterTimeout) clearTimeout(letterTimeout);
+            if (wordTimeout) clearTimeout(wordTimeout);
+            stopDotRepeat();
+            stopDashRepeat();
+
+            document.getElementById('historyText').textContent = '';
+            rawHistoryText = '';
+            currentMorse = '';
+            updateMorseDisplay();
+            resetTimerDisplay();
+
+            isIdleState = true;
+            showChar('❤️');
+            startHeartAnimation();
+        }
+
         document.addEventListener('keydown', (e) => {
             if (e.repeat) return;
 
             if (e.code === 'Space') {
                 e.preventDefault();
-                if (!isTrainingMode) {
-                    // Stop any playing audio first, then clear everything
-                    if (isPlayingAudio) stopAudioPlayback();
-
-                    document.getElementById('historyText').textContent = '';
-                    rawHistoryText = '';
-                    currentMorse = '';
-                    updateMorseDisplay();
-                    resetTimerDisplay();
-
-                    // restore heart + animation
-                    isIdleState = true;
-                    showChar('❤️');
-                    startHeartAnimation();
-                }
+                fullReset();
                 return;
             }
 
             if (e.code === 'NumpadDecimal' || e.code === 'Comma' || e.code === 'Delete' || e.code === 'Period' || e.key === ',' || e.code === 'NumpadDelete' || e.key === 'ArrowLeft') {
                 e.preventDefault();
-                onDotOrDash(true);
+                onDotOrDash(true, false);
                 return;
             }
 
             if (e.code === 'NumpadEnter' || (e.code === 'Enter' && e.location === 3) || e.key === 'ArrowRight') {
                 e.preventDefault();
-                onDotOrDash(false);
+                onDotOrDash(false, false);
             }
         });
 
@@ -1055,6 +1291,197 @@
 
             pickAndPlayRandomTrainingLetter();
         }
+
+        // ===== INFO MODAL =====
+        function openInfoModal() {
+            document.getElementById('infoOverlay').classList.add('visible');
+        }
+        function closeInfoModal(e) {
+            if (e && e.target !== document.getElementById('infoOverlay')) return;
+            document.getElementById('infoOverlay').classList.remove('visible');
+        }
+
+        // ===== MORSE PADDLE (3.5 mm jack) =====
+        function getChannelPeak(analyser, dataArray) {
+            analyser.getByteTimeDomainData(dataArray);
+            let max = 0;
+            for (let i = 0; i < dataArray.length; i++) {
+                const v = Math.abs(dataArray[i] - 128);
+                if (v > max) max = v;
+            }
+            return max;
+        }
+
+        function processPaddleAudio() {
+            if (!isPaddleOn || !paddleAnalyserL || !paddleAnalyserR) return;
+
+            const levelL = getChannelPeak(paddleAnalyserL, paddleDataL);
+            const levelR = getChannelPeak(paddleAnalyserR, paddleDataR);
+
+            const dotActive  = levelL > PADDLE_THRESHOLD;
+            const dashActive = levelR > PADDLE_THRESHOLD;
+
+            if (dotActive && !lastMicDot) {
+                startDotRepeat(true);
+            } else if (!dotActive && lastMicDot) {
+                stopDotRepeat();
+            }
+
+            if (dashActive && !lastMicDash) {
+                startDashRepeat(true);
+            } else if (!dashActive && lastMicDash) {
+                stopDashRepeat();
+            }
+
+            lastMicDot  = dotActive;
+            lastMicDash = dashActive;
+
+            paddleRAF = requestAnimationFrame(processPaddleAudio);
+        }
+
+        async function togglePaddle() {
+            const btn   = document.getElementById('paddleBtn');
+            const icon  = document.getElementById('paddleIcon');
+            const label = document.getElementById('paddleLabel');
+
+            if (isPaddleOn) {
+                isPaddleOn = false;
+                if (paddleRAF) {
+                    cancelAnimationFrame(paddleRAF);
+                    paddleRAF = null;
+                }
+
+                stopDotRepeat();
+                stopDashRepeat();
+                lastMicDot = lastMicDash = false;
+
+                if (mediaStream) {
+                    mediaStream.getTracks().forEach(t => t.stop());
+                    mediaStream = null;
+                }
+                if (paddleAudioCtx) {
+                    try { await paddleAudioCtx.close(); } catch (e) {}
+                    paddleAudioCtx = null;
+                }
+                paddleAnalyserL = paddleAnalyserR = null;
+
+                btn.classList.remove('active');
+                icon.textContent = '🎙️';
+                label.textContent = 'Morse paddle';
+            } else {
+                try {
+                    mediaStream = await navigator.mediaDevices.getUserMedia({
+                        audio: {
+                            echoCancellation: false,
+                            noiseSuppression: false,
+                            autoGainControl: false,
+                            channelCount: 2,
+                            sampleRate: 44100
+                        }
+                    });
+
+                    paddleAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    if (paddleAudioCtx.state === 'suspended') {
+                        await paddleAudioCtx.resume();
+                    }
+
+                    const source = paddleAudioCtx.createMediaStreamSource(mediaStream);
+                    const splitter = paddleAudioCtx.createChannelSplitter(2);
+
+                    paddleAnalyserL = paddleAudioCtx.createAnalyser();
+                    paddleAnalyserR = paddleAudioCtx.createAnalyser();
+                    paddleAnalyserL.fftSize = 256;
+                    paddleAnalyserR.fftSize = 256;
+                    paddleAnalyserL.smoothingTimeConstant = 0;
+                    paddleAnalyserR.smoothingTimeConstant = 0;
+
+                    paddleDataL = new Uint8Array(paddleAnalyserL.fftSize);
+                    paddleDataR = new Uint8Array(paddleAnalyserR.fftSize);
+
+                    source.connect(splitter);
+                    splitter.connect(paddleAnalyserL, 0);
+                    splitter.connect(paddleAnalyserR, 1);
+
+                    isPaddleOn = true;
+                    btn.classList.add('active');
+                    icon.textContent = '🎙️';
+                    label.textContent = 'Paddle On';
+
+                    processPaddleAudio();
+                } catch (err) {
+                    console.error('Paddle / microphone error:', err);
+                    alert('Could not access the microphone.\nPlease allow microphone permission and select the correct input device.');
+                }
+            }
+        }
+
+        // ===== REPEAT HELPERS =====
+        function startDotRepeat(fromPaddle = true) {
+            if (dotRepeatInterval) return;
+            onDotOrDash(true, fromPaddle);
+            const delay = fromPaddle ? getPaddleRepeatDelay() : 180;
+            dotRepeatInterval = setInterval(() => onDotOrDash(true, fromPaddle), delay);
+        }
+        function stopDotRepeat() {
+            if (dotRepeatInterval) {
+                clearInterval(dotRepeatInterval);
+                dotRepeatInterval = null;
+            }
+        }
+        function startDashRepeat(fromPaddle = true) {
+            if (dashRepeatInterval) return;
+            onDotOrDash(false, fromPaddle);
+            const delay = fromPaddle ? getPaddleRepeatDelay() : 180;
+            dashRepeatInterval = setInterval(() => onDotOrDash(false, fromPaddle), delay);
+        }
+        function stopDashRepeat() {
+            if (dashRepeatInterval) {
+                clearInterval(dashRepeatInterval);
+                dashRepeatInterval = null;
+            }
+        }
+
+        // ===== USB PADDLE (Gamepad) =====
+        function pollGamepad() {
+            const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+            const gp = gamepads[0];
+            if (!gp) return;
+
+            const dotPressed  = gp.buttons[0]?.pressed || (gp.axes[0] < -0.5);
+            const dashPressed = gp.buttons[1]?.pressed || (gp.axes[0] > 0.5) || gp.buttons[2]?.pressed;
+
+            if (dotPressed && !lastDotPressed) {
+                startDotRepeat(true);
+            } else if (!dotPressed && lastDotPressed) {
+                stopDotRepeat();
+            }
+
+            if (dashPressed && !lastDashPressed) {
+                startDashRepeat(true);
+            } else if (!dashPressed && lastDashPressed) {
+                stopDashRepeat();
+            }
+
+            lastDotPressed  = dotPressed;
+            lastDashPressed = dashPressed;
+        }
+
+        function startGamepadPolling() {
+            if (gamepadInterval) return;
+            gamepadInterval = setInterval(pollGamepad, 30);
+        }
+
+        window.addEventListener('gamepadconnected', (e) => {
+            console.log('USB Paddle / Gamepad connected:', e.gamepad.id);
+            startGamepadPolling();
+        });
+
+        window.addEventListener('gamepaddisconnected', () => {
+            stopDotRepeat();
+            stopDashRepeat();
+        });
+
+        startGamepadPolling();
 
         // Init
         renderAlphabet();
