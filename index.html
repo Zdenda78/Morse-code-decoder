@@ -708,13 +708,16 @@
 
         // Paddle WPM (only affects paddle + USB paddle)
         let paddleWpm = 20;
-        const PADDLE_THRESHOLD = 6;
+        const PADDLE_THRESHOLD = 8;
 
         function getDitMs() {
             return 1200 / paddleWpm;
         }
-        function getPaddleRepeatDelay() {
-            return 2 * getDitMs();
+
+        // Správné intervaly podle WPM (tečka 2×dit, čárka 4×dit)
+        function getPaddleElementInterval(isDot) {
+            const dit = getDitMs();
+            return isDot ? (2 * dit) : (4 * dit);
         }
 
         function updatePaddleWpm() {
@@ -1301,7 +1304,7 @@
             document.getElementById('infoOverlay').classList.remove('visible');
         }
 
-        // ===== MORSE PADDLE (3.5 mm jack) =====
+        // ===== MORSE PADDLE (3.5 mm jack) – OPRAVENO =====
         function getChannelPeak(analyser, dataArray) {
             analyser.getByteTimeDomainData(dataArray);
             let max = 0;
@@ -1318,6 +1321,7 @@
             const levelL = getChannelPeak(paddleAnalyserL, paddleDataL);
             const levelR = getChannelPeak(paddleAnalyserR, paddleDataR);
 
+            // LEVÝ = TEČKA, PRAVÝ = ČÁRKA
             const dotActive  = levelL > PADDLE_THRESHOLD;
             const dashActive = levelR > PADDLE_THRESHOLD;
 
@@ -1370,13 +1374,14 @@
                 label.textContent = 'Morse paddle';
             } else {
                 try {
+                    // Toto volání vyvolá systémové okno pro výběr mikrofonu
                     mediaStream = await navigator.mediaDevices.getUserMedia({
                         audio: {
                             echoCancellation: false,
                             noiseSuppression: false,
                             autoGainControl: false,
-                            channelCount: 2,
-                            sampleRate: 44100
+                            channelCount: { ideal: 2 },
+                            sampleRate: { ideal: 44100 }
                         }
                     });
 
@@ -1399,8 +1404,8 @@
                     paddleDataR = new Uint8Array(paddleAnalyserR.fftSize);
 
                     source.connect(splitter);
-                    splitter.connect(paddleAnalyserL, 0);
-                    splitter.connect(paddleAnalyserR, 1);
+                    splitter.connect(paddleAnalyserL, 0); // levý = tečka
+                    splitter.connect(paddleAnalyserR, 1); // pravý = čárka
 
                     isPaddleOn = true;
                     btn.classList.add('active');
@@ -1415,11 +1420,11 @@
             }
         }
 
-        // ===== REPEAT HELPERS =====
+        // ===== REPEAT HELPERS – OPRAVENO pro správné WPM =====
         function startDotRepeat(fromPaddle = true) {
             if (dotRepeatInterval) return;
             onDotOrDash(true, fromPaddle);
-            const delay = fromPaddle ? getPaddleRepeatDelay() : 180;
+            const delay = fromPaddle ? getPaddleElementInterval(true) : 180;
             dotRepeatInterval = setInterval(() => onDotOrDash(true, fromPaddle), delay);
         }
         function stopDotRepeat() {
@@ -1431,7 +1436,7 @@
         function startDashRepeat(fromPaddle = true) {
             if (dashRepeatInterval) return;
             onDotOrDash(false, fromPaddle);
-            const delay = fromPaddle ? getPaddleRepeatDelay() : 180;
+            const delay = fromPaddle ? getPaddleElementInterval(false) : 180;
             dashRepeatInterval = setInterval(() => onDotOrDash(false, fromPaddle), delay);
         }
         function stopDashRepeat() {
