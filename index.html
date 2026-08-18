@@ -38,16 +38,8 @@
             --btn-active: #e5e7eb;
             --timer-color: #1f2328;
         }
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        html, body {
-            height: 100vh;
-            max-height: 100vh;
-            overflow: hidden;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { height: 100vh; max-height: 100vh; overflow: hidden; }
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background-color: var(--bg-color);
@@ -60,485 +52,151 @@
             transition: background-color 0.3s ease, color 0.3s ease;
             position: relative;
         }
-        .top-bar-right {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            z-index: 100;
-        }
+        .top-bar-right { position: absolute; top: 15px; right: 20px; z-index: 100; }
         .theme-toggle-btn {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            font-size: 1.2rem;
-            padding: 6px 10px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-primary);
+            font-size: 1.2rem; padding: 6px 10px; border-radius: 50%; cursor: pointer; transition: all 0.2s ease;
+            display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
-        .theme-toggle-btn:hover {
-            transform: scale(1.1);
-            border-color: var(--accent-color);
-        }
-        header {
-            text-align: center;
-            margin-bottom: 1rem;
-            margin-top: 0.5rem;
-        }
-        header h1 {
-            font-size: 1.5rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--text-secondary);
-            font-weight: 700;
-        }
-        .wrapper {
-            width: 100%;
-            max-width: 500px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
-        }
+        .theme-toggle-btn:hover { transform: scale(1.1); border-color: var(--accent-color); }
+        header { text-align: center; margin-bottom: 1rem; margin-top: 0.5rem; }
+        header h1 { font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-secondary); font-weight: 700; }
+        .wrapper { width: 100%; max-width: 500px; display: flex; flex-direction: column; align-items: center; position: relative; }
         .main-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 24px;
-            padding: 3rem 2rem;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(10px);
-            position: relative;
+            background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 24px;
+            padding: 3rem 2rem; width: 100%; display: flex; flex-direction: column; align-items: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2); backdrop-filter: blur(10px); position: relative;
             transition: background-color 0.3s ease, border-color 0.3s ease;
         }
         .train-btn, .info-btn {
-            position: absolute;
-            top: 14px;
-            background: var(--btn-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            font-size: 0.78rem;
-            font-weight: 600;
-            padding: 5px 11px;
-            border-radius: 8px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s ease;
-            user-select: none;
-            z-index: 10;
+            position: absolute; top: 14px; background: var(--btn-bg); border: 1px solid var(--border-color);
+            color: var(--text-primary); font-size: 0.78rem; font-weight: 600; padding: 5px 11px; border-radius: 8px;
+            cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease; user-select: none; z-index: 10;
         }
-        .train-btn {
-            right: 14px;
-        }
-        .info-btn {
-            left: 14px;
-        }
-        .train-btn:hover, .info-btn:hover {
-            border-color: var(--accent-color);
-            color: var(--accent-color);
-            transform: scale(1.03);
-        }
-        .train-btn.playing {
-            border-color: var(--dash-color);
-            color: var(--dash-color);
-        }
-        .char-display-wrapper {
-            width: 100%;
-            height: 140px;
-            perspective: 1000px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        .train-btn { right: 14px; }
+        .info-btn { left: 14px; }
+        .train-btn:hover, .info-btn:hover { border-color: var(--accent-color); color: var(--accent-color); transform: scale(1.03); }
+        .train-btn.playing { border-color: var(--dash-color); color: var(--dash-color); }
+        .char-display-wrapper { width: 100%; height: 140px; perspective: 1000px; display: flex; align-items: center; justify-content: center; }
         .flip-card-inner {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            text-align: center;
-            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            transform-style: preserve-3d;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            position: relative; width: 100%; height: 100%; text-align: center;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d;
+            display: flex; align-items: center; justify-content: center;
         }
-        .flip-card-inner.flipped {
-            transform: rotateX(180deg);
-        }
+        .flip-card-inner.flipped { transform: rotateX(180deg); }
         .flip-card-front, .flip-card-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            -webkit-backface-visibility: hidden;
-            backface-visibility: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 7rem;
-            font-weight: 800;
-            user-select: none;
+            position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden;
+            display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace;
+            font-size: 7rem; font-weight: 800; user-select: none;
         }
-        .flip-card-front {
-            color: var(--accent-color);
-            text-shadow: 0 0 30px var(--accent-glow);
-        }
-        .flip-card-back {
-            color: var(--heart-dark-red);
-            text-shadow: 0 0 25px var(--heart-glow);
-            transform: rotateX(180deg);
-        }
-        .char-display-wrapper.active {
-            transform: scale(1.08);
-            transition: transform 0.1s ease;
-        }
-        .char-display-wrapper.unknown .flip-card-front {
-            color: var(--dash-color);
-        }
+        .flip-card-front { color: var(--accent-color); text-shadow: 0 0 30px var(--accent-glow); }
+        .flip-card-back { color: var(--heart-dark-red); text-shadow: 0 0 25px var(--heart-glow); transform: rotateX(180deg); }
+        .char-display-wrapper.active { transform: scale(1.08); transition: transform 0.1s ease; }
+        .char-display-wrapper.unknown .flip-card-front { color: var(--dash-color); }
         .morse-code-display {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 2.2rem;
-            letter-spacing: 6px;
-            height: 48px;
-            margin: 1.5rem 0;
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 200px;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 8px;
+            font-family: 'JetBrains Mono', monospace; font-size: 2.2rem; letter-spacing: 6px; height: 48px;
+            margin: 1.5rem 0; color: var(--text-primary); display: flex; align-items: center; justify-content: center;
+            min-width: 200px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px;
         }
-        .morse-symbol {
-            display: inline-block;
-            transition: transform 0.1s;
-        }
+        .morse-symbol { display: inline-block; transition: transform 0.1s; }
         .morse-symbol.dot { color: var(--dot-color); }
         .morse-symbol.dash { color: var(--dash-color); }
-        .key-hints {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            width: 100%;
-            margin-top: 1rem;
-        }
+        .key-hints { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; margin-top: 1rem; }
         .key-btn {
-            background-color: var(--btn-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 12px;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            transition: all 0.15s ease;
+            background-color: var(--btn-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 12px;
+            text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: all 0.15s ease;
         }
-        .key-btn.active {
-            border-color: var(--accent-color);
-            background-color: var(--btn-active);
-            transform: translateY(2px);
-        }
-        .key-btn .key-name {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            font-weight: 600;
-        }
-        .key-btn .key-action {
-            font-family: 'JetBrains Mono', monospace;
-            font-weight: 700;
-            font-size: 1.1rem;
-        }
+        .key-btn.active { border-color: var(--accent-color); background-color: var(--btn-active); transform: translateY(2px); }
+        .key-btn .key-name { font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; }
+        .key-btn .key-action { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 1.1rem; }
         .key-btn.dot-btn .key-action { color: var(--dot-color); }
         .key-btn.dash-btn .key-action { color: var(--dash-color); }
         .timer-display {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 3.8rem;
-            font-weight: 800;
-            height: 105px;
-            line-height: 105px;
-            color: var(--timer-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            user-select: none;
-            width: 100%;
-            text-align: center;
-            transition: color 0.3s ease;
+            font-family: 'JetBrains Mono', monospace; font-size: 3.8rem; font-weight: 800; height: 105px; line-height: 105px;
+            color: var(--timer-color); display: flex; align-items: center; justify-content: center; user-select: none;
+            width: 100%; text-align: center; transition: color 0.3s ease;
         }
-        .paddle-controls {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            margin-top: 0.5rem;
-        }
+        .paddle-controls { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-top: 0.5rem; }
         .mic-btn {
-            background: var(--btn-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            font-size: 0.78rem;
-            font-weight: 600;
-            padding: 6px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s ease;
-            user-select: none;
+            background: var(--btn-bg); border: 1px solid var(--border-color); color: var(--text-primary);
+            font-size: 0.78rem; font-weight: 600; padding: 6px 12px; border-radius: 8px; cursor: pointer;
+            display: flex; align-items: center; gap: 6px; transition: all 0.2s ease; user-select: none;
         }
-        .mic-btn:hover {
-            border-color: var(--accent-color);
-            color: var(--accent-color);
-            transform: scale(1.03);
-        }
-        .mic-btn.active {
-            border-color: var(--dot-color);
-            color: var(--dot-color);
-            background: rgba(63, 185, 80, 0.1);
-        }
+        .mic-btn:hover { border-color: var(--accent-color); color: var(--accent-color); transform: scale(1.03); }
+        .mic-btn.active { border-color: var(--dot-color); color: var(--dot-color); background: rgba(63, 185, 80, 0.1); }
         .wpm-select {
-            background: var(--btn-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            font-size: 0.75rem;
-            font-weight: 600;
-            padding: 4px 8px;
-            border-radius: 6px;
-            cursor: pointer;
-            outline: none;
+            background: var(--btn-bg); border: 1px solid var(--border-color); color: var(--text-primary);
+            font-size: 0.75rem; font-weight: 600; padding: 4px 8px; border-radius: 6px; cursor: pointer; outline: none;
         }
-        .wpm-select:hover, .wpm-select:focus {
-            border-color: var(--accent-color);
-        }
+        .wpm-select:hover, .wpm-select:focus { border-color: var(--accent-color); }
         .history-container {
-            width: 100%;
-            margin-top: 1.5rem;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 1rem 1.5rem;
-            transition: background-color 0.3s ease, border-color 0.3s ease;
+            width: 100%; margin-top: 1.5rem; background: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 16px; padding: 1rem 1.5rem; transition: background-color 0.3s ease, border-color 0.3s ease;
         }
-        .history-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-        .history-title {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+        .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .history-title { font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; }
         .play-audio-btn {
-            background: var(--btn-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            font-size: 0.8rem;
-            font-weight: 600;
-            padding: 4px 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s ease;
-            user-select: none;
+            background: var(--btn-bg); border: 1px solid var(--border-color); color: var(--text-primary);
+            font-size: 0.8rem; font-weight: 600; padding: 4px 10px; border-radius: 8px; cursor: pointer;
+            display: flex; align-items: center; gap: 6px; transition: all 0.2s ease; user-select: none;
         }
-        .play-audio-btn:hover {
-            border-color: var(--accent-color);
-            color: var(--accent-color);
-            transform: scale(1.03);
-        }
-        .play-audio-btn.playing {
-            border-color: var(--dash-color);
-            color: var(--dash-color);
-        }
+        .play-audio-btn:hover { border-color: var(--accent-color); color: var(--accent-color); transform: scale(1.03); }
+        .play-audio-btn.playing { border-color: var(--dash-color); color: var(--dash-color); }
         .history-text {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 1.2rem;
-            word-wrap: break-word;
-            min-height: 1.5rem;
-            max-height: 4.8rem;
-            overflow-y: auto;
-            color: var(--text-primary);
-            white-space: pre-wrap;
-            padding-right: 4px;
+            font-family: 'JetBrains Mono', monospace; font-size: 1.2rem; word-wrap: break-word;
+            min-height: 1.5rem; max-height: 4.8rem; overflow-y: auto; color: var(--text-primary);
+            white-space: pre-wrap; padding-right: 4px;
         }
         .history-text::-webkit-scrollbar { width: 6px; }
         .history-text::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.1); border-radius: 4px; }
         .history-text::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
-        
         .active-playing-char {
-            text-decoration: underline;
-            text-decoration-color: var(--accent-color);
-            text-decoration-thickness: 3px;
-            text-underline-offset: 4px;
-            color: var(--accent-color);
-            font-weight: bold;
+            text-decoration: underline; text-decoration-color: var(--accent-color); text-decoration-thickness: 3px;
+            text-underline-offset: 4px; color: var(--accent-color); font-weight: bold;
         }
-
-        .left-sidebar {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            margin-top: 1rem;
-        }
+        .left-sidebar { width: 100%; display: flex; flex-direction: column; gap: 1.5rem; margin-top: 1rem; }
         .cheat-sheet-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 1rem 0.8rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-            width: 100%;
+            background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px;
+            padding: 1rem 0.8rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); width: 100%;
             transition: background-color 0.3s ease, border-color 0.3s ease;
         }
         @media (min-width: 1100px) {
-            .left-sidebar {
-                position: absolute;
-                top: 0;
-                right: calc(100% + 1.5rem);
-                width: 220px;
-                margin-top: 0;
-            }
-            .cheat-sheet-card.right-panel {
-                position: absolute;
-                top: 0;
-                margin-top: 0;
-                left: calc(100% + 1.5rem);
-                width: 180px;
-            }
+            .left-sidebar { position: absolute; top: 0; right: calc(100% + 1.5rem); width: 220px; margin-top: 0; }
+            .cheat-sheet-card.right-panel { position: absolute; top: 0; margin-top: 0; left: calc(100% + 1.5rem); width: 180px; }
         }
         .cheat-sheet-title {
-            font-size: 0.7rem;
-            color: var(--accent-color);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 700;
-            margin-bottom: 0.6rem;
-            text-align: center;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 0.4rem;
+            font-size: 0.7rem; color: var(--accent-color); text-transform: uppercase; letter-spacing: 1px;
+            font-weight: 700; margin-bottom: 0.6rem; text-align: center; border-bottom: 1px solid var(--border-color); padding-bottom: 0.4rem;
         }
         .cheat-sheet-subtitle { margin-top: 0.8rem; }
-        .cheat-letters-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 2px 6px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.68rem;
-        }
-        .cheat-numbers-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 2px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.68rem;
-        }
-        .cheat-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 2px 4px;
-            background: rgba(150, 150, 150, 0.05);
-            border-radius: 4px;
-        }
-        .cheat-char {
-            font-weight: 700;
-            color: var(--accent-color);
-        }
-        .cheat-code {
-            color: var(--text-primary);
-            letter-spacing: 0.5px;
-        }
-        footer {
-            margin-top: 2rem;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            text-align: center;
-        }
-
-        /* ===== INFO MODAL ===== */
+        .cheat-letters-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px 6px; font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; }
+        .cheat-numbers-grid { display: grid; grid-template-columns: 1fr; gap: 2px; font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; }
+        .cheat-row { display: flex; justify-content: space-between; align-items: center; padding: 2px 4px; background: rgba(150, 150, 150, 0.05); border-radius: 4px; }
+        .cheat-char { font-weight: 700; color: var(--accent-color); }
+        .cheat-code { color: var(--text-primary); letter-spacing: 0.5px; }
+        footer { margin-top: 2rem; font-size: 0.85rem; color: var(--text-secondary); text-align: center; }
         .info-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.45);
-            backdrop-filter: blur(6px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(6px);
+            display: none; align-items: center; justify-content: center; z-index: 1000;
         }
-        .info-overlay.visible {
-            display: flex;
-        }
+        .info-overlay.visible { display: flex; }
         .info-modal {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            border-radius: 20px;
-            padding: 2rem 2.2rem;
-            width: 90%;
-            max-width: 520px;
-            max-height: 85vh;
-            overflow-y: auto;
-            box-shadow: 0 0 40px rgba(255, 255, 255, 0.15),
-                        0 20px 50px rgba(0, 0, 0, 0.35);
-            backdrop-filter: blur(18px);
-            color: #a0a0a0;
-            position: relative;
-            animation: fadeInScale 0.25s ease;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
+            background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.25); border-radius: 20px;
+            padding: 2rem 2.2rem; width: 90%; max-width: 520px; max-height: 85vh; overflow-y: auto;
+            box-shadow: 0 0 40px rgba(255, 255, 255, 0.15), 0 20px 50px rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(18px); color: #a0a0a0; position: relative; animation: fadeInScale 0.25s ease;
+            scrollbar-width: none; -ms-overflow-style: none;
         }
-        .info-modal::-webkit-scrollbar {
-            display: none;
-        }
+        .info-modal::-webkit-scrollbar { display: none; }
         [data-theme="light"] .info-modal {
-            background: rgba(255, 255, 255, 0.85);
-            border: 1px solid rgba(0, 0, 0, 0.08);
-            box-shadow: 0 0 30px rgba(255, 255, 255, 0.6),
-                        0 15px 40px rgba(0, 0, 0, 0.12);
-            color: #555;
+            background: rgba(255, 255, 255, 0.85); border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.6), 0 15px 40px rgba(0, 0, 0, 0.12); color: #555;
         }
-        @keyframes fadeInScale {
-            from { opacity: 0; transform: scale(0.92); }
-            to   { opacity: 1; transform: scale(1); }
-        }
-        .info-modal h2 {
-            font-size: 1.25rem;
-            color: var(--accent-color);
-            margin-bottom: 1rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-        }
-        .info-modal h3 {
-            font-size: 0.95rem;
-            color: var(--text-primary);
-            margin: 1.1rem 0 0.4rem;
-            font-weight: 600;
-        }
-        .info-modal p, .info-modal li {
-            font-size: 0.9rem;
-            line-height: 1.5;
-            margin-bottom: 0.35rem;
-        }
-        .info-modal ul {
-            padding-left: 1.2rem;
-            margin-bottom: 0.6rem;
-        }
+        @keyframes fadeInScale { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
+        .info-modal h2 { font-size: 1.25rem; color: var(--accent-color); margin-bottom: 1rem; font-weight: 700; letter-spacing: 1px; }
+        .info-modal h3 { font-size: 0.95rem; color: var(--text-primary); margin: 1.1rem 0 0.4rem; font-weight: 600; }
+        .info-modal p, .info-modal li { font-size: 0.9rem; line-height: 1.5; margin-bottom: 0.35rem; }
+        .info-modal ul { padding-left: 1.2rem; margin-bottom: 0.6rem; }
     </style>
 </head>
 <body data-theme="dark">
@@ -555,7 +213,6 @@
                 <div class="cheat-letters-grid" id="cheatLettersGrid"></div>
             </aside>
             <div class="timer-display" id="timerDisplay">0.0</div>
-
             <div class="paddle-controls">
                 <button class="mic-btn" id="paddleBtn" onclick="togglePaddle()">
                     <span id="paddleIcon">🎙️</span>
@@ -575,12 +232,10 @@
                 <span>ℹ️</span>
                 <span>Info</span>
             </button>
-
             <button class="train-btn" id="trainBtn" onclick="toggleTrainingMode()">
                 <span id="trainIcon">🎧</span>
                 <span id="trainLabel">Listen & Code</span>
             </button>
-
             <div class="char-display-wrapper" id="charDisplayWrapper">
                 <div class="flip-card-inner" id="flipCardInner">
                     <div class="flip-card-front" id="charDisplayFront">❤️</div>
@@ -644,10 +299,9 @@
         <p>Application for learning and decoding Morse code. App by Zdeněk Sába_2026.</p>
     </footer>
 
-    <!-- INFO MODAL -->
     <div class="info-overlay" id="infoOverlay" onclick="closeInfoModal(event)">
         <div class="info-modal" onclick="event.stopPropagation()">
-            <h2>ℹ️ About this Application</h2>
+             <h2>ℹ️ About this Application</h2>
 
             <p>
                 Morse Code Decoder / Trainer is a simple tool for learning, practicing and decoding Morse code.
@@ -689,14 +343,12 @@
         let audioPlaybackTimeouts = [];
         let rawHistoryText = "";
 
-        // Training mode
         let isTrainingMode = false;
         let trainingTimeouts = [];
         let currentTrainingChar = null;
         let currentTrainingCode = null;
         let pendingTrainingAction = null;
 
-        // Morse Paddle
         let isPaddleOn = false;
         let mediaStream = null;
         let paddleAudioCtx = null;
@@ -706,7 +358,6 @@
         let paddleDataR = null;
         let paddleRAF = null;
 
-        // Paddle WPM (only affects paddle + USB paddle)
         let paddleWpm = 20;
         const PADDLE_THRESHOLD = 8;
 
@@ -714,7 +365,6 @@
             return 1200 / paddleWpm;
         }
 
-        // Správné intervaly podle WPM (tečka 2×dit, čárka 4×dit)
         function getPaddleElementInterval(isDot) {
             const dit = getDitMs();
             return isDot ? (2 * dit) : (4 * dit);
@@ -732,7 +382,6 @@
             }
         }
 
-        // Shared state for mic paddle + USB paddle
         let gamepadInterval = null;
         let lastDotPressed = false;
         let lastDashPressed = false;
@@ -840,24 +489,19 @@
         function highlightCharacter(startIndex, length) {
             const textEl = document.getElementById('historyText');
             if (!rawHistoryText) return;
-
             if (startIndex === null || startIndex === undefined) {
                 textEl.textContent = rawHistoryText;
                 return;
             }
-
             const before = rawHistoryText.substring(0, startIndex);
             const target = rawHistoryText.substring(startIndex, startIndex + length);
             const after = rawHistoryText.substring(startIndex + length);
-
             textEl.innerHTML = '';
             textEl.appendChild(document.createTextNode(before));
-            
             const span = document.createElement('span');
             span.className = 'active-playing-char';
             span.textContent = target;
             textEl.appendChild(span);
-
             textEl.appendChild(document.createTextNode(after));
         }
 
@@ -865,13 +509,10 @@
             audioPlaybackTimeouts.forEach(t => clearTimeout(t));
             audioPlaybackTimeouts = [];
             isPlayingAudio = false;
-            
             highlightCharacter(null);
-
             const btn = document.getElementById('playAudioBtn');
             const icon = document.getElementById('playIcon');
             const label = document.getElementById('playLabel');
-
             btn.classList.remove('playing');
             icon.textContent = '🔊';
             label.textContent = 'Play';
@@ -882,30 +523,24 @@
                 stopAudioPlayback();
                 return;
             }
-
             const historyEl = document.getElementById('historyText');
             rawHistoryText = historyEl.textContent;
             const text = rawHistoryText.toUpperCase();
             if (!text.trim()) return;
-
             isPlayingAudio = true;
             const btn = document.getElementById('playAudioBtn');
             const icon = document.getElementById('playIcon');
             const label = document.getElementById('playLabel');
-
             btn.classList.add('playing');
             icon.textContent = '⏹️';
             label.textContent = 'Stop';
-
             const unit = 80;
             let currentTime = 0;
-
             let i = 0;
             while (i < text.length) {
                 let code = null;
                 let charLen = 1;
                 let charStartIndex = i;
-
                 if (text[i] === " ") {
                     currentTime += unit * 7;
                     i++;
@@ -914,13 +549,11 @@
                     code = TEXT_TO_MORSE[text[i]];
                     charLen = 1;
                 }
-
                 if (code) {
                     const highlightStartTimer = setTimeout(() => {
                         highlightCharacter(charStartIndex, charLen);
                     }, currentTime);
                     audioPlaybackTimeouts.push(highlightStartTimer);
-
                     for (let char of code) {
                         const dur = char === '.' ? unit : unit * 3;
                         const toneTimer = setTimeout(() => {
@@ -929,37 +562,29 @@
                         audioPlaybackTimeouts.push(toneTimer);
                         currentTime += dur + unit;
                     }
-
                     const highlightEndTimer = setTimeout(() => {
                         highlightCharacter(null);
                     }, currentTime);
                     audioPlaybackTimeouts.push(highlightEndTimer);
-
                     currentTime += unit * 2;
                 }
-
                 i += charLen;
             }
-
             const finishTimer = setTimeout(() => {
                 stopAudioPlayback();
             }, currentTime);
             audioPlaybackTimeouts.push(finishTimer);
         }
 
-        // ===== TIMER =====
         let timerInterval = null;
         let timerInactivityTimeout = null;
         let timerStartTime = null;
         let lastInputTime = null;
         let isTiming = false;
-
         const timerDisplay = document.getElementById('timerDisplay');
 
         function formatTime(seconds) {
-            if (seconds < 60) {
-                return seconds.toFixed(1);
-            }
+            if (seconds < 60) return seconds.toFixed(1);
             const mins = Math.floor(seconds / 60);
             const secs = Math.floor(seconds % 60);
             return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
@@ -967,7 +592,6 @@
 
         function startTimer() {
             if (isTrainingMode) return;
-
             if (!isTiming) {
                 isTiming = true;
                 timerStartTime = Date.now();
@@ -983,9 +607,7 @@
 
         function resetInactivityTimer() {
             if (isTrainingMode) return;
-
             if (timerInactivityTimeout) clearTimeout(timerInactivityTimeout);
-            
             timerInactivityTimeout = setTimeout(() => {
                 if (isTiming && lastInputTime && timerStartTime) {
                     const elapsedToLastInput = (lastInputTime - timerStartTime) / 1000;
@@ -1010,11 +632,9 @@
             timerDisplay.textContent = "0.0";
         }
 
-        // ===== HEART / 73 FLIP ANIMATION =====
         let heartFlipInterval = null;
         let isFlipped = false;
         let isIdleState = true;
-
         const flipCardInner = document.getElementById('flipCardInner');
 
         function startHeartAnimation() {
@@ -1022,11 +642,8 @@
                 heartFlipInterval = setInterval(() => {
                     if (isIdleState && !isTrainingMode) {
                         isFlipped = !isFlipped;
-                        if (isFlipped) {
-                            flipCardInner.classList.add('flipped');
-                        } else {
-                            flipCardInner.classList.remove('flipped');
-                        }
+                        if (isFlipped) flipCardInner.classList.add('flipped');
+                        else flipCardInner.classList.remove('flipped');
                     }
                 }, 4000);
             }
@@ -1041,7 +658,6 @@
             isFlipped = false;
         }
 
-        // ===== INPUT / DECODER =====
         let currentMorse = "";
         let letterTimeout = null;
         let wordTimeout = null;
@@ -1060,10 +676,8 @@
         function showChar(char, isUnknown = false) {
             const wrapper = document.getElementById('charDisplayWrapper');
             const front = document.getElementById('charDisplayFront');
-
             flipCardInner.classList.remove('flipped');
             isFlipped = false;
-
             wrapper.classList.remove('unknown');
             if (isUnknown) {
                 wrapper.classList.add('unknown');
@@ -1071,7 +685,6 @@
             } else {
                 front.textContent = char || '❤️';
             }
-
             wrapper.classList.add('active');
             setTimeout(() => wrapper.classList.remove('active'), 120);
         }
@@ -1085,9 +698,7 @@
 
         function finalizeLetter() {
             if (!currentMorse) return;
-
             const decoded = MORSE_MAP[currentMorse] || null;
-
             if (isTrainingMode) {
                 if (decoded && decoded === currentTrainingChar) {
                     showChar(decoded, false);
@@ -1116,25 +727,20 @@
                     showChar('❓', true);
                 }
             }
-
             currentMorse = "";
             updateMorseDisplay();
         }
 
         function onDotOrDash(isDot, fromPaddle = false) {
             if (isPlayingAudio) stopAudioPlayback();
-
             if (isIdleState) {
                 isIdleState = false;
                 stopHeartAnimation();
             }
-
             if (letterTimeout) clearTimeout(letterTimeout);
             if (wordTimeout) clearTimeout(wordTimeout);
-
             currentMorse += isDot ? '.' : '-';
             updateMorseDisplay();
-
             let toneMs;
             if (fromPaddle) {
                 const dit = getDitMs();
@@ -1143,28 +749,21 @@
                 toneMs = isDot ? 80 : 240;
             }
             playTone(toneMs, 700);
-
             const btn = document.getElementById(isDot ? 'dotKeyIndicator' : 'dashKeyIndicator');
             btn.classList.add('active');
             setTimeout(() => btn.classList.remove('active'), 100);
-
             if (!isTrainingMode) {
                 const preview = MORSE_MAP[currentMorse] || '?';
                 const wrapper = document.getElementById('charDisplayWrapper');
                 const front = document.getElementById('charDisplayFront');
                 front.textContent = preview;
-                if (preview === '?') {
-                    wrapper.classList.add('unknown');
-                } else {
-                    wrapper.classList.remove('unknown');
-                }
+                if (preview === '?') wrapper.classList.add('unknown');
+                else wrapper.classList.remove('unknown');
             }
-
             if (!isTrainingMode) {
                 startTimer();
                 resetInactivityTimer();
             }
-
             letterTimeout = setTimeout(() => {
                 finalizeLetter();
                 if (!isTrainingMode) {
@@ -1175,7 +774,6 @@
             }, LETTER_TIMEOUT_MS);
         }
 
-        // ===== FULL RESET (Spacebar) =====
         function fullReset() {
             if (isPlayingAudio) stopAudioPlayback();
             if (isTrainingMode) stopTrainingMode();
@@ -1184,13 +782,11 @@
             if (wordTimeout) clearTimeout(wordTimeout);
             stopDotRepeat();
             stopDashRepeat();
-
             document.getElementById('historyText').textContent = '';
             rawHistoryText = '';
             currentMorse = '';
             updateMorseDisplay();
             resetTimerDisplay();
-
             isIdleState = true;
             showChar('❤️');
             startHeartAnimation();
@@ -1198,26 +794,22 @@
 
         document.addEventListener('keydown', (e) => {
             if (e.repeat) return;
-
             if (e.code === 'Space') {
                 e.preventDefault();
                 fullReset();
                 return;
             }
-
             if (e.code === 'NumpadDecimal' || e.code === 'Comma' || e.code === 'Delete' || e.code === 'Period' || e.key === ',' || e.code === 'NumpadDelete' || e.key === 'ArrowLeft') {
                 e.preventDefault();
                 onDotOrDash(true, false);
                 return;
             }
-
             if (e.code === 'NumpadEnter' || (e.code === 'Enter' && e.location === 3) || e.key === 'ArrowRight') {
                 e.preventDefault();
                 onDotOrDash(false, false);
             }
         });
 
-        // ===== TRAINING MODE =====
         function stopTrainingMode() {
             isTrainingMode = false;
             trainingTimeouts.forEach(t => clearTimeout(t));
@@ -1225,19 +817,15 @@
             pendingTrainingAction = null;
             currentTrainingChar = null;
             currentTrainingCode = null;
-
             const btn = document.getElementById('trainBtn');
             const icon = document.getElementById('trainIcon');
             const label = document.getElementById('trainLabel');
-
             btn.classList.remove('playing');
             icon.textContent = '🎧';
             label.textContent = 'Listen & Code';
-
             currentMorse = '';
             updateMorseDisplay();
             resetTimerDisplay();
-
             isIdleState = true;
             showChar('❤️');
             startHeartAnimation();
@@ -1256,18 +844,12 @@
 
         function pickAndPlayRandomTrainingLetter() {
             if (!isTrainingMode) return;
-
             const item = ALPHABET[Math.floor(Math.random() * ALPHABET.length)];
-
             currentTrainingChar = item.char;
-            currentTrainingCode = item.code
-                .replace(/•/g, '.')
-                .replace(/−/g, '-');
-
+            currentTrainingCode = item.code.replace(/•/g, '.').replace(/−/g, '-');
             currentMorse = '';
             updateMorseDisplay();
             showChar('🎧');
-
             playMorseCode(currentTrainingCode);
         }
 
@@ -1276,26 +858,20 @@
                 stopTrainingMode();
                 return;
             }
-
             if (isPlayingAudio) stopAudioPlayback();
-
             isTrainingMode = true;
             isIdleState = false;
             stopHeartAnimation();
             resetTimerDisplay();
-
             const btn = document.getElementById('trainBtn');
             const icon = document.getElementById('trainIcon');
             const label = document.getElementById('trainLabel');
-
             btn.classList.add('playing');
             icon.textContent = '⏹️';
             label.textContent = 'Stop Training';
-
             pickAndPlayRandomTrainingLetter();
         }
 
-        // ===== INFO MODAL =====
         function openInfoModal() {
             document.getElementById('infoOverlay').classList.add('visible');
         }
@@ -1304,7 +880,6 @@
             document.getElementById('infoOverlay').classList.remove('visible');
         }
 
-        // ===== MORSE PADDLE (3.5 mm jack) – OPRAVENO =====
         function getChannelPeak(analyser, dataArray) {
             analyser.getByteTimeDomainData(dataArray);
             let max = 0;
@@ -1317,30 +892,55 @@
 
         function processPaddleAudio() {
             if (!isPaddleOn || !paddleAnalyserL || !paddleAnalyserR) return;
-
             const levelL = getChannelPeak(paddleAnalyserL, paddleDataL);
             const levelR = getChannelPeak(paddleAnalyserR, paddleDataR);
-
-            // LEVÝ = TEČKA, PRAVÝ = ČÁRKA
             const dotActive  = levelL > PADDLE_THRESHOLD;
             const dashActive = levelR > PADDLE_THRESHOLD;
-
             if (dotActive && !lastMicDot) {
                 startDotRepeat(true);
             } else if (!dotActive && lastMicDot) {
                 stopDotRepeat();
             }
-
             if (dashActive && !lastMicDash) {
                 startDashRepeat(true);
             } else if (!dashActive && lastMicDash) {
                 stopDashRepeat();
             }
-
             lastMicDot  = dotActive;
             lastMicDash = dashActive;
-
             paddleRAF = requestAnimationFrame(processPaddleAudio);
+        }
+
+        // ===== VYPNUTÍ VŠECH MIKROFONŮ =====
+        function forceStopAllMicrophones() {
+            if (paddleRAF) {
+                cancelAnimationFrame(paddleRAF);
+                paddleRAF = null;
+            }
+            stopDotRepeat();
+            stopDashRepeat();
+            lastMicDot = lastMicDash = false;
+
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => {
+                    track.stop();
+                    track.enabled = false;
+                });
+                mediaStream = null;
+            }
+            if (paddleAudioCtx) {
+                try { paddleAudioCtx.close(); } catch (e) {}
+                paddleAudioCtx = null;
+            }
+            paddleAnalyserL = paddleAnalyserR = null;
+            isPaddleOn = false;
+
+            const btn = document.getElementById('paddleBtn');
+            const icon = document.getElementById('paddleIcon');
+            const label = document.getElementById('paddleLabel');
+            btn.classList.remove('active');
+            icon.textContent = '🎙️';
+            label.textContent = 'Morse paddle';
         }
 
         async function togglePaddle() {
@@ -1349,40 +949,26 @@
             const label = document.getElementById('paddleLabel');
 
             if (isPaddleOn) {
-                isPaddleOn = false;
-                if (paddleRAF) {
-                    cancelAnimationFrame(paddleRAF);
-                    paddleRAF = null;
-                }
-
-                stopDotRepeat();
-                stopDashRepeat();
-                lastMicDot = lastMicDash = false;
-
-                if (mediaStream) {
-                    mediaStream.getTracks().forEach(t => t.stop());
-                    mediaStream = null;
-                }
-                if (paddleAudioCtx) {
-                    try { await paddleAudioCtx.close(); } catch (e) {}
-                    paddleAudioCtx = null;
-                }
-                paddleAnalyserL = paddleAnalyserR = null;
-
-                btn.classList.remove('active');
-                icon.textContent = '🎙️';
-                label.textContent = 'Morse paddle';
+                forceStopAllMicrophones();
             } else {
                 try {
-                    // Toto volání vyvolá systémové okno pro výběr mikrofonu
+                    // Vždy otevře výběr zařízení – uživatel MUSÍ vybrat POUZE 3.5 mm jack
                     mediaStream = await navigator.mediaDevices.getUserMedia({
                         audio: {
                             echoCancellation: false,
                             noiseSuppression: false,
                             autoGainControl: false,
-                            channelCount: { ideal: 2 },
+                            channelCount: { ideal: 2, min: 1 },
                             sampleRate: { ideal: 44100 }
                         }
+                    });
+
+                    // Okamžitě detekce odpojení paddle
+                    mediaStream.getAudioTracks().forEach(track => {
+                        track.onended = () => {
+                            console.log('Paddle odpojen – vypínám všechny mikrofony');
+                            forceStopAllMicrophones();
+                        };
                     });
 
                     paddleAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1404,23 +990,34 @@
                     paddleDataR = new Uint8Array(paddleAnalyserR.fftSize);
 
                     source.connect(splitter);
-                    splitter.connect(paddleAnalyserL, 0); // levý = tečka
-                    splitter.connect(paddleAnalyserR, 1); // pravý = čárka
+                    splitter.connect(paddleAnalyserL, 0); // LEVÝ = TEČKA
+                    splitter.connect(paddleAnalyserR, 1); // PRAVÝ = ČÁRKA
 
                     isPaddleOn = true;
                     btn.classList.add('active');
                     icon.textContent = '🎙️';
                     label.textContent = 'Paddle On';
-
                     processPaddleAudio();
                 } catch (err) {
-                    console.error('Paddle / microphone error:', err);
-                    alert('Could not access the microphone.\nPlease allow microphone permission and select the correct input device.');
+                    console.error('Paddle error:', err);
+                    forceStopAllMicrophones();
+                    alert('Vyberte v okně POUZE 3,5 mm jack (Line-In / Headset / Realtek).\n\nNikdy nevybírejte notebookový mikrofon!');
                 }
             }
         }
 
-        // ===== REPEAT HELPERS – OPRAVENO pro správné WPM =====
+        // Detekce změny zařízení (vytáhnutí jacku)
+        if (navigator.mediaDevices) {
+            navigator.mediaDevices.addEventListener('devicechange', () => {
+                if (isPaddleOn && mediaStream) {
+                    const tracks = mediaStream.getAudioTracks();
+                    if (tracks.length === 0 || tracks.every(t => t.readyState === 'ended')) {
+                        forceStopAllMicrophones();
+                    }
+                }
+            });
+        }
+
         function startDotRepeat(fromPaddle = true) {
             if (dotRepeatInterval) return;
             onDotOrDash(true, fromPaddle);
@@ -1446,27 +1043,16 @@
             }
         }
 
-        // ===== USB PADDLE (Gamepad) =====
         function pollGamepad() {
             const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
             const gp = gamepads[0];
             if (!gp) return;
-
             const dotPressed  = gp.buttons[0]?.pressed || (gp.axes[0] < -0.5);
             const dashPressed = gp.buttons[1]?.pressed || (gp.axes[0] > 0.5) || gp.buttons[2]?.pressed;
-
-            if (dotPressed && !lastDotPressed) {
-                startDotRepeat(true);
-            } else if (!dotPressed && lastDotPressed) {
-                stopDotRepeat();
-            }
-
-            if (dashPressed && !lastDashPressed) {
-                startDashRepeat(true);
-            } else if (!dashPressed && lastDashPressed) {
-                stopDashRepeat();
-            }
-
+            if (dotPressed && !lastDotPressed) startDotRepeat(true);
+            else if (!dotPressed && lastDotPressed) stopDotRepeat();
+            if (dashPressed && !lastDashPressed) startDashRepeat(true);
+            else if (!dashPressed && lastDashPressed) stopDashRepeat();
             lastDotPressed  = dotPressed;
             lastDashPressed = dashPressed;
         }
@@ -1477,18 +1063,15 @@
         }
 
         window.addEventListener('gamepadconnected', (e) => {
-            console.log('USB Paddle / Gamepad connected:', e.gamepad.id);
+            console.log('USB Paddle connected:', e.gamepad.id);
             startGamepadPolling();
         });
-
         window.addEventListener('gamepaddisconnected', () => {
             stopDotRepeat();
             stopDashRepeat();
         });
-
         startGamepadPolling();
 
-        // Init
         renderAlphabet();
         startHeartAnimation();
     </script>
