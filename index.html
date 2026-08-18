@@ -197,6 +197,24 @@
         .info-modal h3 { font-size: 0.95rem; color: var(--text-primary); margin: 1.1rem 0 0.4rem; font-weight: 600; }
         .info-modal p, .info-modal li { font-size: 0.9rem; line-height: 1.5; margin-bottom: 0.35rem; }
         .info-modal ul { padding-left: 1.2rem; margin-bottom: 0.6rem; }
+
+        /* ===== Počítadlo návštěvnosti – zarovnání ===== */
+        .info-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.2rem;
+            font-size: 0.85rem;
+            opacity: 0.7;
+        }
+        .visitor-counter {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            min-width: 110px;
+            text-align: right;
+        }
     </style>
 </head>
 <body data-theme="dark">
@@ -333,9 +351,13 @@
                 <li>The time is automatically rounded down to the exact value of the last tick after 3 seconds of inactivity.</li>
             </ul>
 
-            <p style="font-size:0.85rem; opacity:0.7; margin-top:1.2rem;">
-                App by Zdeněk Sába • 2026
-            </p>
+            <!-- Zarovnaný footer s počítadlem -->
+            <div class="info-footer">
+                <span>App by Zdeněk Sába • 2026</span>
+                <div class="visitor-counter">
+                    Návštěv: <span id="visitCount">…</span>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -953,7 +975,6 @@
                 forceStopAllMicrophones();
             } else {
                 try {
-                    // Vždy otevře výběr zařízení – uživatel MUSÍ vybrat POUZE 3.5 mm jack
                     mediaStream = await navigator.mediaDevices.getUserMedia({
                         audio: {
                             echoCancellation: false,
@@ -964,7 +985,6 @@
                         }
                     });
 
-                    // Okamžitě detekce odpojení paddle
                     mediaStream.getAudioTracks().forEach(track => {
                         track.onended = () => {
                             console.log('Paddle odpojen – vypínám všechny mikrofony');
@@ -991,8 +1011,8 @@
                     paddleDataR = new Uint8Array(paddleAnalyserR.fftSize);
 
                     source.connect(splitter);
-                    splitter.connect(paddleAnalyserL, 0); // LEVÝ = TEČKA
-                    splitter.connect(paddleAnalyserR, 1); // PRAVÝ = ČÁRKA
+                    splitter.connect(paddleAnalyserL, 0);
+                    splitter.connect(paddleAnalyserR, 1);
 
                     isPaddleOn = true;
                     btn.classList.add('active');
@@ -1007,7 +1027,6 @@
             }
         }
 
-        // Detekce změny zařízení (vytáhnutí jacku)
         if (navigator.mediaDevices) {
             navigator.mediaDevices.addEventListener('devicechange', () => {
                 if (isPaddleOn && mediaStream) {
@@ -1072,6 +1091,25 @@
             stopDashRepeat();
         });
         startGamepadPolling();
+
+        // ===== Počítadlo návštěvnosti =====
+        async function updateVisitorCounter() {
+            const key = "morse-decoder-zdenek-saba-2026";
+            try {
+                const res = await fetch(`https://api.countapi.xyz/hit/${key}`);
+                const data = await res.json();
+                const el = document.getElementById('visitCount');
+                if (el) {
+                    el.textContent = data.value.toLocaleString('cs-CZ');
+                }
+            } catch (e) {
+                const el = document.getElementById('visitCount');
+                if (el) el.textContent = "—";
+                console.warn("Visitor counter failed:", e);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', updateVisitorCounter);
 
         renderAlphabet();
         startHeartAnimation();
