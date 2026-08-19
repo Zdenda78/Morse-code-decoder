@@ -116,7 +116,7 @@
             color: var(--timer-color); display: flex; align-items: center; justify-content: center; user-select: none;
             width: 100%; text-align: center; transition: color 0.3s ease;
         }
-        .paddle-controls { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-top: 0.5rem; }
+        .paddle-controls { display: none; flex-direction: column; align-items: center; gap: 6px; margin-top: 0.5rem; }
         .mic-btn {
             background: var(--btn-bg); border: 1px solid var(--border-color); color: var(--text-primary);
             font-size: 0.78rem; font-weight: 600; padding: 6px 12px; border-radius: 8px; cursor: pointer;
@@ -197,8 +197,6 @@
         .info-modal h3 { font-size: 0.95rem; color: var(--text-primary); margin: 1.1rem 0 0.4rem; font-weight: 600; }
         .info-modal p, .info-modal li { font-size: 0.9rem; line-height: 1.5; margin-bottom: 0.35rem; }
         .info-modal ul { padding-left: 1.2rem; margin-bottom: 0.6rem; }
-
-        /* ===== Počítadlo návštěvnosti – zarovnání ===== */
         .info-footer {
             display: flex;
             justify-content: space-between;
@@ -231,7 +229,7 @@
                 <div class="cheat-letters-grid" id="cheatLettersGrid"></div>
             </aside>
             <div class="timer-display" id="timerDisplay">0.0</div>
-            <div class="paddle-controls">
+            <div class="paddle-controls" id="paddleControls">
                 <button class="mic-btn" id="paddleBtn" onclick="togglePaddle()">
                     <span id="paddleIcon">🎙️</span>
                     <span id="paddleLabel">Morse paddle</span>
@@ -320,19 +318,16 @@
     <div class="info-overlay" id="infoOverlay" onclick="closeInfoModal(event)">
         <div class="info-modal" onclick="event.stopPropagation()">
              <h2>ℹ️ About this Application</h2>
-
             <p>
                 Morse Code Decoder / Trainer is a simple tool for learning, practicing and decoding Morse code.
                 It supports keyboard input, an external dual-lever paddle connected via the 3.5 mm microphone jack.
             </p>
-
             <h3>Keyboard</h3>
             <ul>
                 <li><strong>Left Arrow & Numpad . / Del </strong> = Dot (•)</li>
                 <li><strong>Right Arrow & Numpad Enter</strong> = Dash (−)</li>
                 <li><strong>Spacebar =</strong> Full reset (clears everything and returns to the initial screen)</li>
             </ul>
-
             <h3>External Morse Paddle (3.5 mm jack)</h3>
             <ul>
                 <li>To ensure that the Morse paddle works properly, make sure that any other external microphones are disconnected or turned off.</li>
@@ -340,8 +335,6 @@
                 <li>Select your sound card / Realtek microphone when the browser asks for permission</li>
                 <li>Use the <strong>WPM selector</strong> (10–30 WPM) to set realistic CW keyer speed (default 20 WPM)</li>
             </ul>
-
-           
             <h3>Other features</h3>
             <ul>
                 <li><strong>Listen & Code</strong> – Training mode: the app plays a random letter, you reply with the correct Morse code</li>
@@ -350,11 +343,8 @@
                 <li>Live character preview and history of decoded text</li>
                 <li>The time is automatically rounded down to the exact value of the last tick after 3 seconds of inactivity.</li>
             </ul>
-
-            <!-- Zarovnaný footer s počítadlem -->
             <div class="info-footer">
                 <span>App by Zdeněk Sába • 2026</span>
-                </div>
             </div>
         </div>
     </div>
@@ -813,6 +803,19 @@
             startHeartAnimation();
         }
 
+        // ===== Tajný kód 81 pro zobrazení paddle =====
+        let secretBuffer = '';
+        document.addEventListener('keydown', (e) => {
+            if (e.key >= '0' && e.key <= '9') {
+                secretBuffer += e.key;
+                if (secretBuffer.length > 2) secretBuffer = secretBuffer.slice(-2);
+                if (secretBuffer === '81') {
+                    document.getElementById('paddleControls').style.display = 'flex';
+                    secretBuffer = '';
+                }
+            }
+        });
+
         document.addEventListener('keydown', (e) => {
             if (e.repeat) return;
             if (e.code === 'Space') {
@@ -932,7 +935,6 @@
             paddleRAF = requestAnimationFrame(processPaddleAudio);
         }
 
-        // ===== VYPNUTÍ VŠECH MIKROFONŮ =====
         function forceStopAllMicrophones() {
             if (paddleRAF) {
                 cancelAnimationFrame(paddleRAF);
@@ -1020,7 +1022,6 @@
                 } catch (err) {
                     console.error('Paddle error:', err);
                     forceStopAllMicrophones();
-                    alert('Vyberte v okně POUZE 3,5 mm jack (Line-In / Headset / Realtek).\n\nNikdy nevybírejte notebookový mikrofon!');
                 }
             }
         }
@@ -1090,7 +1091,6 @@
         });
         startGamepadPolling();
 
-        // ===== Počítadlo návštěvnosti =====
         async function updateVisitorCounter() {
             const key = "morse-decoder-zdenek-saba-2026";
             try {
