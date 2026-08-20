@@ -497,16 +497,35 @@
             osc.stop(audioCtx.currentTime + durationSec);
         }
 
+        // Pomocná funkce pro postupné zobrazování Morse kódu
+        function updateMorseDisplayFromCode(codeStr) {
+            const display = document.getElementById('morseDisplay');
+            display.innerHTML = '';
+            for (const c of codeStr) {
+                const s = document.createElement('span');
+                s.className = 'morse-symbol ' + (c === '.' ? 'dot' : 'dash');
+                s.textContent = c === '.' ? '•' : '−';
+                display.appendChild(s);
+            }
+        }
+
         function highlightCharacter(startIndex, length) {
             const textEl = document.getElementById('historyText');
+            const display = document.getElementById('morseDisplay');
+
             if (!rawHistoryText) return;
+
             if (startIndex === null || startIndex === undefined) {
                 textEl.textContent = rawHistoryText;
+                display.innerHTML = '';
                 return;
             }
+
             const before = rawHistoryText.substring(0, startIndex);
             const target = rawHistoryText.substring(startIndex, startIndex + length);
             const after = rawHistoryText.substring(startIndex + length);
+
+            // Historie – podtržení zůstává
             textEl.innerHTML = '';
             textEl.appendChild(document.createTextNode(before));
             const span = document.createElement('span');
@@ -514,6 +533,17 @@
             span.textContent = target;
             textEl.appendChild(span);
             textEl.appendChild(document.createTextNode(after));
+
+            // Zobrazíme písmeno ve velké kartě (Morse se doplňuje úder po úderu)
+            if (target && target.trim() !== '') {
+                if (isIdleState) {
+                    isIdleState = false;
+                    stopHeartAnimation();
+                }
+                showChar(target);
+                // Na začátku písmene vyčistíme Morse (bude se plnit postupně)
+                display.innerHTML = '';
+            }
         }
 
         function stopAudioPlayback() {
@@ -561,18 +591,27 @@
                     charLen = 1;
                 }
                 if (code) {
+                    // Na začátku písmene zobrazíme písmeno + podtržení
                     const highlightStartTimer = setTimeout(() => {
                         highlightCharacter(charStartIndex, charLen);
                     }, currentTime);
                     audioPlaybackTimeouts.push(highlightStartTimer);
+
+                    // Postupné zobrazování úderů + tóny
+                    let partialCode = '';
                     for (let char of code) {
                         const dur = char === '.' ? unit : unit * 3;
                         const toneTimer = setTimeout(() => {
                             playTone(dur, 700);
+                            // Přidáme další úder do Morse kódu pod písmenem
+                            partialCode += char;
+                            updateMorseDisplayFromCode(partialCode);
                         }, currentTime);
                         audioPlaybackTimeouts.push(toneTimer);
                         currentTime += dur + unit;
                     }
+
+                    // Po skončení písmene zrušíme podtržení a vyčistíme Morse
                     const highlightEndTimer = setTimeout(() => {
                         highlightCharacter(null);
                     }, currentTime);
