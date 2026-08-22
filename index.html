@@ -94,13 +94,28 @@
         .char-display-wrapper.active { transform: scale(1.08); transition: transform 0.1s ease; }
         .char-display-wrapper.unknown .flip-card-front { color: var(--dash-color); }
         .morse-code-display {
-            font-family: 'JetBrains Mono', monospace; font-size: 2.2rem; letter-spacing: 6px; height: 48px;
-            margin: 1.5rem 0; color: var(--text-primary); display: flex; align-items: center; justify-content: center;
+            font-family: 'JetBrains Mono', monospace; font-size: 2.2rem; letter-spacing: 0;
+            height: 48px; margin: 1.5rem 0; color: var(--text-primary);
+            display: flex; align-items: center; justify-content: center; gap: 10px;
             min-width: 200px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px;
         }
-        .morse-symbol { display: inline-block; transition: transform 0.1s; }
-        .morse-symbol.dot { color: var(--dot-color); }
-        .morse-symbol.dash { color: var(--dash-color); }
+        .morse-symbol {
+            display: inline-block;
+            transition: transform 0.1s;
+            flex-shrink: 0;
+        }
+        .morse-symbol.dot {
+            width: 0.55rem;
+            height: 0.55rem;
+            border-radius: 50%;
+            background-color: var(--dot-color);
+        }
+        .morse-symbol.dash {
+            width: 1.65rem;
+            height: 0.55rem;
+            border-radius: 0.15rem;
+            background-color: var(--dash-color);
+        }
         .key-hints { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; margin-top: 1rem; }
         .key-btn {
             background-color: var(--btn-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 12px;
@@ -108,9 +123,27 @@
         }
         .key-btn.active { border-color: var(--accent-color); background-color: var(--btn-active); transform: translateY(2px); }
         .key-btn .key-name { font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; }
-        .key-btn .key-action { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 1.1rem; }
-        .key-btn.dot-btn .key-action { color: var(--dot-color); }
-        .key-btn.dash-btn .key-action { color: var(--dash-color); }
+        .key-btn .key-action {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 1.4rem;
+        }
+        .key-action-symbol .morse-symbol.dot {
+            width: 0.55rem;
+            height: 0.55rem;
+            border-radius: 50%;
+            background-color: var(--dot-color);
+        }
+        .key-action-symbol .morse-symbol.dash {
+            width: 1.65rem;
+            height: 0.55rem;
+            border-radius: 0.15rem;
+            background-color: var(--dash-color);
+        }
         .timer-display {
             font-family: 'JetBrains Mono', monospace; font-size: 3.8rem; font-weight: 800; height: 105px; line-height: 105px;
             color: var(--timer-color); display: flex; align-items: center; justify-content: center; user-select: none;
@@ -261,12 +294,16 @@
             <div class="morse-code-display" id="morseDisplay"></div>
             <div class="key-hints">
                 <div class="key-btn dot-btn" id="dotKeyIndicator">
-                    <span class="key-name">← / NumPad ( . / Del )</span>
-                    <span class="key-action">Dot ( • )</span>
+                    <span class="key-name">← NumPad ( . / Del )</span>
+                    <span class="key-action key-action-symbol">
+                        <span class="morse-symbol dot"></span>
+                    </span>
                 </div>
                 <div class="key-btn dash-btn" id="dashKeyIndicator">
                     <span class="key-name">NumPad (Enter) →</span>
-                    <span class="key-action">Dash ( − )</span>
+                    <span class="key-action key-action-symbol">
+                        <span class="morse-symbol dash"></span>
+                    </span>
                 </div>
             </div>
         </main>
@@ -497,14 +534,12 @@
             osc.stop(audioCtx.currentTime + durationSec);
         }
 
-        // Pomocná funkce pro postupné zobrazování Morse kódu
         function updateMorseDisplayFromCode(codeStr) {
             const display = document.getElementById('morseDisplay');
             display.innerHTML = '';
             for (const c of codeStr) {
                 const s = document.createElement('span');
                 s.className = 'morse-symbol ' + (c === '.' ? 'dot' : 'dash');
-                s.textContent = c === '.' ? '•' : '−';
                 display.appendChild(s);
             }
         }
@@ -525,7 +560,6 @@
             const target = rawHistoryText.substring(startIndex, startIndex + length);
             const after = rawHistoryText.substring(startIndex + length);
 
-            // Historie – podtržení zůstává
             textEl.innerHTML = '';
             textEl.appendChild(document.createTextNode(before));
             const span = document.createElement('span');
@@ -534,14 +568,12 @@
             textEl.appendChild(span);
             textEl.appendChild(document.createTextNode(after));
 
-            // Zobrazíme písmeno ve velké kartě (Morse se doplňuje úder po úderu)
             if (target && target.trim() !== '') {
                 if (isIdleState) {
                     isIdleState = false;
                     stopHeartAnimation();
                 }
                 showChar(target);
-                // Na začátku písmene vyčistíme Morse (bude se plnit postupně)
                 display.innerHTML = '';
             }
         }
@@ -591,19 +623,16 @@
                     charLen = 1;
                 }
                 if (code) {
-                    // Na začátku písmene zobrazíme písmeno + podtržení
                     const highlightStartTimer = setTimeout(() => {
                         highlightCharacter(charStartIndex, charLen);
                     }, currentTime);
                     audioPlaybackTimeouts.push(highlightStartTimer);
 
-                    // Postupné zobrazování úderů + tóny
                     let partialCode = '';
                     for (let char of code) {
                         const dur = char === '.' ? unit : unit * 3;
                         const toneTimer = setTimeout(() => {
                             playTone(dur, 700);
-                            // Přidáme další úder do Morse kódu pod písmenem
                             partialCode += char;
                             updateMorseDisplayFromCode(partialCode);
                         }, currentTime);
@@ -611,7 +640,6 @@
                         currentTime += dur + unit;
                     }
 
-                    // Po skončení písmene zrušíme podtržení a vyčistíme Morse
                     const highlightEndTimer = setTimeout(() => {
                         highlightCharacter(null);
                     }, currentTime);
@@ -718,7 +746,6 @@
             for (const c of currentMorse) {
                 const span = document.createElement('span');
                 span.className = 'morse-symbol ' + (c === '.' ? 'dot' : 'dash');
-                span.textContent = c === '.' ? '•' : '−';
                 display.appendChild(span);
             }
         }
@@ -842,7 +869,6 @@
             startHeartAnimation();
         }
 
-        // ===== Tajný kód 81 pro zobrazení paddle =====
         let secretBuffer = '';
         document.addEventListener('keydown', (e) => {
             if (e.key >= '0' && e.key <= '9') {
