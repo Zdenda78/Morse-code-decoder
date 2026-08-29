@@ -56,20 +56,19 @@
             transform-origin: center center;
             position: relative;
             display: flex;
-            flex-direction: column;
-            justify-content: space-between;
             align-items: center;
-            padding: 2rem 1rem;
+            justify-content: center;
+            padding: 1rem;
         }
         .top-bar-right { position: absolute; top: 15px; right: 20px; z-index: 100; }
         .theme-toggle-btn {
             background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-primary);
-            font-size: 1.2rem; padding: 6px 10px; border-radius: 50%; cursor: pointer; transition: all 0.2s ease;
+            font-size: 1.3rem; padding: 7px 11px; border-radius: 50%; cursor: pointer; transition: all 0.2s ease;
             display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
         .theme-toggle-btn:hover { transform: scale(1.1); border-color: var(--accent-color); }
-        header { text-align: center; margin-bottom: 1rem; margin-top: 0.5rem; }
-        header h1 { font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-secondary); font-weight: 700; }
+        header { position: absolute; top: 0.6rem; left: 0; right: 0; text-align: center; }
+        header h1 { font-size: 1rem; letter-spacing: 1px; text-transform: uppercase; color: var(--text-secondary); font-weight: 600; }
         .wrapper { width: 100%; max-width: 500px; display: flex; flex-direction: column; align-items: center; position: relative; }
         .main-card {
             background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 24px;
@@ -114,6 +113,7 @@
         .key-btn {
             background-color: var(--btn-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 12px;
             text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: all 0.15s ease;
+            cursor: pointer; touch-action: manipulation; user-select: none; -webkit-tap-highlight-color: transparent;
         }
         .key-btn.active { border-color: var(--accent-color); background-color: var(--btn-active); transform: translateY(2px); }
         .key-btn .key-name { font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; }
@@ -195,7 +195,7 @@
         .cheat-row { display: flex; justify-content: space-between; align-items: center; padding: 2px 4px; background: rgba(150, 150, 150, 0.05); border-radius: 4px; }
         .cheat-char { font-weight: 700; color: var(--accent-color); }
         .cheat-code { color: var(--text-primary); letter-spacing: 0.5px; }
-        footer { margin-top: 2rem; font-size: 0.85rem; color: var(--text-secondary); text-align: center; }
+        footer { position: absolute; bottom: 0.6rem; left: 0; right: 0; text-align: center; font-size: 0.75rem; color: var(--text-secondary); }
         .info-overlay {
             position: fixed; inset: 0; background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(6px);
             display: none; align-items: center; justify-content: center; z-index: 1000;
@@ -339,7 +339,7 @@
     </div>
 
     <div class="info-overlay" id="infoOverlay" onclick="closeInfoModal(event)">
-        <div class="info-modal" onclick="event.stopPropagation()">
+        <div class="info-modal" onclick="closeInfoModal(event)">
              <h2>ℹ️ About this Application</h2>
             <p>
                 Morse Code Decoder / Trainer is a simple tool for learning, practicing and decoding Morse code.
@@ -373,8 +373,8 @@
     </div>
 
     <script>
-        const APP_DESIGN_WIDTH = 880;
-        const APP_DESIGN_HEIGHT = 720;
+        const APP_DESIGN_WIDTH = 1100;
+        const APP_DESIGN_HEIGHT = 900;
 
         function fitAppToWindow() {
             const el = document.getElementById('appFit');
@@ -969,7 +969,6 @@
             document.getElementById('infoOverlay').classList.add('visible');
         }
         function closeInfoModal(e) {
-            if (e && e.target !== document.getElementById('infoOverlay')) return;
             document.getElementById('infoOverlay').classList.remove('visible');
         }
 
@@ -1159,6 +1158,17 @@
             stopDashRepeat();
         });
         startGamepadPolling();
+
+        // Touch / pointer support for Dot and Dash (mobile-friendly)
+        function bindTouchKey(el, isDot) {
+            if (!el) return;
+            el.addEventListener('pointerdown', (e) => {
+                e.preventDefault();
+                onDotOrDash(isDot, false);
+            });
+        }
+        bindTouchKey(document.getElementById('dotKeyIndicator'), true);
+        bindTouchKey(document.getElementById('dashKeyIndicator'), false);
 
         async function updateVisitorCounter() {
             const key = "morse-decoder-zdenek-saba-2026";
