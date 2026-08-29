@@ -45,12 +45,21 @@
             background-color: var(--bg-color);
             color: var(--text-primary);
             display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            position: relative;
+        }
+        .app-fit {
+            width: 1100px;
+            height: 900px;
+            transform-origin: center center;
+            position: relative;
+            display: flex;
             flex-direction: column;
             justify-content: space-between;
             align-items: center;
             padding: 2rem 1rem;
-            transition: background-color 0.3s ease, color 0.3s ease;
-            position: relative;
         }
         .top-bar-right { position: absolute; top: 15px; right: 20px; z-index: 100; }
         .theme-toggle-btn {
@@ -94,28 +103,13 @@
         .char-display-wrapper.active { transform: scale(1.08); transition: transform 0.1s ease; }
         .char-display-wrapper.unknown .flip-card-front { color: var(--dash-color); }
         .morse-code-display {
-            font-family: 'JetBrains Mono', monospace; font-size: 2.2rem; letter-spacing: 0;
-            height: 48px; margin: 1.5rem 0; color: var(--text-primary);
-            display: flex; align-items: center; justify-content: center; gap: 10px;
+            font-family: 'JetBrains Mono', monospace; font-size: 2.2rem; letter-spacing: 6px; height: 48px;
+            margin: 1.5rem 0; color: var(--text-primary); display: flex; align-items: center; justify-content: center;
             min-width: 200px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px;
         }
-        .morse-symbol {
-            display: inline-block;
-            transition: transform 0.1s;
-            flex-shrink: 0;
-        }
-        .morse-symbol.dot {
-            width: 0.55rem;
-            height: 0.55rem;
-            border-radius: 50%;
-            background-color: var(--dot-color);
-        }
-        .morse-symbol.dash {
-            width: 1.65rem;
-            height: 0.55rem;
-            border-radius: 0.15rem;
-            background-color: var(--dash-color);
-        }
+        .morse-symbol { display: inline-block; transition: transform 0.1s; }
+        .morse-symbol.dot { color: var(--dot-color); }
+        .morse-symbol.dash { color: var(--dash-color); }
         .key-hints { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; margin-top: 1rem; }
         .key-btn {
             background-color: var(--btn-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 12px;
@@ -123,27 +117,9 @@
         }
         .key-btn.active { border-color: var(--accent-color); background-color: var(--btn-active); transform: translateY(2px); }
         .key-btn .key-name { font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; }
-        .key-btn .key-action {
-            font-family: 'JetBrains Mono', monospace;
-            font-weight: 700;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 1.4rem;
-        }
-        .key-action-symbol .morse-symbol.dot {
-            width: 0.55rem;
-            height: 0.55rem;
-            border-radius: 50%;
-            background-color: var(--dot-color);
-        }
-        .key-action-symbol .morse-symbol.dash {
-            width: 1.65rem;
-            height: 0.55rem;
-            border-radius: 0.15rem;
-            background-color: var(--dash-color);
-        }
+        .key-btn .key-action { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 1.1rem; }
+        .key-btn.dot-btn .key-action { color: var(--dot-color); }
+        .key-btn.dash-btn .key-action { color: var(--dash-color); }
         .timer-display {
             font-family: 'JetBrains Mono', monospace; font-size: 3.8rem; font-weight: 800; height: 105px; line-height: 105px;
             color: var(--timer-color); display: flex; align-items: center; justify-content: center; user-select: none;
@@ -187,15 +163,27 @@
             text-decoration: underline; text-decoration-color: var(--accent-color); text-decoration-thickness: 3px;
             text-underline-offset: 4px; color: var(--accent-color); font-weight: bold;
         }
-        .left-sidebar { width: 100%; display: flex; flex-direction: column; gap: 1.5rem; margin-top: 1rem; }
+        .left-sidebar {
+            position: absolute;
+            top: 0;
+            right: calc(100% + 1.5rem);
+            width: 220px;
+            margin-top: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
         .cheat-sheet-card {
             background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px;
             padding: 1rem 0.8rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); width: 100%;
             transition: background-color 0.3s ease, border-color 0.3s ease;
         }
-        @media (min-width: 1100px) {
-            .left-sidebar { position: absolute; top: 0; right: calc(100% + 1.5rem); width: 220px; margin-top: 0; }
-            .cheat-sheet-card.right-panel { position: absolute; top: 0; margin-top: 0; left: calc(100% + 1.5rem); width: 180px; }
+        .cheat-sheet-card.right-panel {
+            position: absolute;
+            top: 0;
+            margin-top: 0;
+            left: calc(100% + 1.5rem);
+            width: 180px;
         }
         .cheat-sheet-title {
             font-size: 0.7rem; color: var(--accent-color); text-transform: uppercase; letter-spacing: 1px;
@@ -249,6 +237,7 @@
     </style>
 </head>
 <body data-theme="dark">
+    <div class="app-fit" id="appFit">
     <div class="top-bar-right">
         <button class="theme-toggle-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle theme">🌙</button>
     </div>
@@ -294,16 +283,12 @@
             <div class="morse-code-display" id="morseDisplay"></div>
             <div class="key-hints">
                 <div class="key-btn dot-btn" id="dotKeyIndicator">
-                    <span class="key-name">← NumPad ( . / Del )</span>
-                    <span class="key-action key-action-symbol">
-                        <span class="morse-symbol dot"></span>
-                    </span>
+                    <span class="key-name">← / NumPad ( . / Del )</span>
+                    <span class="key-action">Dot ( • )</span>
                 </div>
                 <div class="key-btn dash-btn" id="dashKeyIndicator">
                     <span class="key-name">NumPad (Enter) →</span>
-                    <span class="key-action key-action-symbol">
-                        <span class="morse-symbol dash"></span>
-                    </span>
+                    <span class="key-action">Dash ( − )</span>
                 </div>
             </div>
         </main>
@@ -351,6 +336,7 @@
     <footer>
         <p>Application for learning and decoding Morse code. App by Zdeněk Sába_2026.</p>
     </footer>
+    </div>
 
     <div class="info-overlay" id="infoOverlay" onclick="closeInfoModal(event)">
         <div class="info-modal" onclick="event.stopPropagation()">
@@ -387,6 +373,22 @@
     </div>
 
     <script>
+        const APP_DESIGN_WIDTH = 880;
+        const APP_DESIGN_HEIGHT = 720;
+
+        function fitAppToWindow() {
+            const el = document.getElementById('appFit');
+            if (!el) return;
+            const scale = Math.min(
+                window.innerWidth / APP_DESIGN_WIDTH,
+                window.innerHeight / APP_DESIGN_HEIGHT
+            );
+            el.style.transform = 'scale(' + scale + ')';
+        }
+
+        window.addEventListener('resize', fitAppToWindow);
+        fitAppToWindow();
+
         let isPlayingAudio = false;
         let audioPlaybackTimeouts = [];
         let rawHistoryText = "";
@@ -540,6 +542,7 @@
             for (const c of codeStr) {
                 const s = document.createElement('span');
                 s.className = 'morse-symbol ' + (c === '.' ? 'dot' : 'dash');
+                s.textContent = c === '.' ? '•' : '−';
                 display.appendChild(s);
             }
         }
@@ -746,6 +749,7 @@
             for (const c of currentMorse) {
                 const span = document.createElement('span');
                 span.className = 'morse-symbol ' + (c === '.' ? 'dot' : 'dash');
+                span.textContent = c === '.' ? '•' : '−';
                 display.appendChild(span);
             }
         }
